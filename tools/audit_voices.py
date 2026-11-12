@@ -52,6 +52,7 @@ def main() -> None:
         tree = json.loads(_get(api))
         cards = [x["path"] for x in tree if x["path"].endswith("MODEL_CARD")]
         sizes = {x["path"]: x.get("lfs", {}).get("size", x.get("size", 0)) for x in tree}
+        hashes = {x["path"]: x.get("lfs", {}).get("oid", "") for x in tree}
         for card in sorted(cards):
             folder = card.rsplit("/", 1)[0]
             try:
@@ -73,6 +74,7 @@ def main() -> None:
                 "speakers": spk, "license": ok[0], "attribution_required": ok[1],
                 "license_text": lic_raw, "dataset_url": url,
                 "path": f"{folder}/{ident}", "size_bytes": sizes.get(f"{folder}/{ident}.onnx", 0),
+                "sha256": hashes.get(f"{folder}/{ident}.onnx", ""),
             })
     json.dump({"source": BASE, "voices": entries}, sys.stdout, ensure_ascii=False, indent=1)
     print(f"\n# aceptadas={len(entries)} rechazadas={len(rejected)}", file=sys.stderr)

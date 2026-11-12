@@ -13,7 +13,8 @@
    "license_text": "Public domain",
    "dataset_url": "https://github.com/carlfm01/my-speech-datasets",
    "path": "es/es_ES/carlfm/x_low/es_ES-carlfm-x_low",
-   "size_bytes": 28130791
+   "size_bytes": 28130791,
+   "sha256": "d69677323a907cd4963f42b29c20a98b5d6bfa7f3e64df339915e4650c00d125"
   },
   {
    "id": "es_ES-davefx-medium",
@@ -27,7 +28,8 @@
    "license_text": "CC0",
    "dataset_url": "https://github.com/OHF-Voice/voice-datasets",
    "path": "es/es_ES/davefx/medium/es_ES-davefx-medium",
-   "size_bytes": 63221984
+   "size_bytes": 63221984,
+   "sha256": "d2c9224e122321aac3c33343957fff4d0f465226cb74c66b0f520ca3f8c0dd07"
   },
   {
    "id": "es_ES-mls_10246-low",
@@ -41,7 +43,8 @@
    "license_text": "CC BY 4.0",
    "dataset_url": "http://www.openslr.org/94/",
    "path": "es/es_ES/mls_10246/low/es_ES-mls_10246-low",
-   "size_bytes": 63104526
+   "size_bytes": 63104526,
+   "sha256": "3f9d76d2778778942297aab052aa7b2e67248d3f43614c889ee82901a230e197"
   },
   {
    "id": "es_ES-mls_9972-low",
@@ -55,7 +58,8 @@
    "license_text": "CC BY 4.0",
    "dataset_url": "http://www.openslr.org/94/",
    "path": "es/es_ES/mls_9972/low/es_ES-mls_9972-low",
-   "size_bytes": 63104526
+   "size_bytes": 63104526,
+   "sha256": "afdd61beb26d3aba18245c0352a8173e7f96196fbe4979e115590e8f775c95f0"
   },
   {
    "id": "es_ES-sharvard-medium",
@@ -69,7 +73,8 @@
    "license_text": "http://creativecommons.org/licenses/by/3.0/",
    "dataset_url": "https://datashare.ed.ac.uk/handle/10283/574",
    "path": "es/es_ES/sharvard/medium/es_ES-sharvard-medium",
-   "size_bytes": 76753841
+   "size_bytes": 76753841,
+   "sha256": "234dc4cf0fdb53ccb76b9b2c4d7ef1330364762674c1b78c1b62d8608c528a54"
   },
   {
    "id": "es_MX-ald-medium",
@@ -83,7 +88,8 @@
    "license_text": "http://unlicense.org",
    "dataset_url": "https://huggingface.co/datasets/rmcpantoja/Ald_Mexican_Spanish_speech_dataset",
    "path": "es/es_MX/ald/medium/es_MX-ald-medium",
-   "size_bytes": 63201294
+   "size_bytes": 63201294,
+   "sha256": "019b3803293c93e34a206dd2e53a3889209a514e786fd7144f7b70196c579b63"
   },
   {
    "id": "es_MX-claude-high",
@@ -97,7 +103,8 @@
    "license_text": "apache-2.0",
    "dataset_url": "https://huggingface.co/spaces/HirCoir/Piper-TTS-Spanish",
    "path": "es/es_MX/claude/high/es_MX-claude-high",
-   "size_bytes": 63122309
+   "size_bytes": 63122309,
+   "sha256": "3ef40a71ea63852cd8ab7e6fa7d2ecdcfa67a0b47c9c48e3f10e02ee02083ea0"
   },
   {
    "id": "en_GB-alba-medium",
@@ -111,7 +118,8 @@
    "license_text": "https://creativecommons.org/licenses/by/4.0/",
    "dataset_url": "https://datashare.ed.ac.uk/handle/10283/3270",
    "path": "en/en_GB/alba/medium/en_GB-alba-medium",
-   "size_bytes": 63221984
+   "size_bytes": 63221984,
+   "sha256": "1f9da809b6da1ef4190bb5dd6cce4f4af803274539e9cf9e0693085150bac3d7"
   },
   {
    "id": "en_GB-aru-medium",
@@ -125,7 +133,8 @@
    "license_text": "https://creativecommons.org/licenses/by/4.0/",
    "dataset_url": "https://www.liverpool.ac.uk/architecture/research/acoustics-research-unit/speech-corpus/",
    "path": "en/en_GB/aru/medium/en_GB-aru-medium",
-   "size_bytes": 76754097
+   "size_bytes": 76754097,
+   "sha256": "9e74d089a8563f8b2446426d01becb046cd3c3bfbafe1a20fd03a9a79bd82619"
   },
   {
    "id": "en_GB-cori-high",
@@ -139,7 +148,8 @@
    "license_text": "public domain",
    "dataset_url": "https://librivox.org",
    "path": "en/en_GB/cori/high/en_GB-cori-high",
-   "size_bytes": 114219352
+   "size_bytes": 114219352,
+   "sha256": "470b4dd634c98f8a4850d7626ffc3dfc90774628eeef6605a6dd8f88f30a5903"
   },
   {
    "id": "en_GB-cori-medium",
@@ -153,7 +163,8 @@
    "license_text": "CC BY 4.0 (Hi-Fi Multi-Speaker English TTS Dataset, NVIDIA Corporation)",
    "dataset_url": "https://www.openslr.org/109/",
    "path": "en/en_GB/cori/medium/en_GB-cori-medium",
-   "size_bytes": 63221984
+   "size_bytes": 63221984,
+   "sha256": "2e0a55e140de672aa19b182602b407607bd2e6c35fc6020c0b1516053c02e995"
   },
   {
    "id": "en_GB-vctk-medium",
@@ -167,7 +178,8 @@
    "license_text": "https://creativecommons.org/licenses/by/4.0/",
    "dataset_url": "https://datashare.ed.ac.uk/handle/10283/3443",
    "path": "en/en_GB/vctk/medium/en_GB-vctk-medium",
-   "size_bytes": 76952753
+   "size_bytes": 76952753,
+   "sha256": "4e9fc85ab9009385319fc6bae7f55577f8a2d7ee77fd9159a5500eb6531f41e6"
   },
   {
    "id": "en_US-bryce-medium",
@@ -181,7 +193,8 @@
    "license_text": "public domain",
    "dataset_url": "",
    "path": "en/en_US/bryce/medium/en_US-bryce-medium",
-   "size_bytes": 63531379
+   "size_bytes": 63531379,
+   "sha256": "dc9caa6c313199ffb5ac698b6e542fa6cba388aeaf2731e25262e33b9810aef1"
   },
   {
    "id": "en_US-hifi_tts_92-medium",
@@ -195,7 +208,8 @@
    "license_text": "CC BY 4.0 (Hi-Fi Multi-Speaker English TTS Dataset, NVIDIA Corporation)",
    "dataset_url": "https://www.openslr.org/109/",
    "path": "en/en_US/hifi_tts_92/medium/en_US-hifi_tts_92-medium",
-   "size_bytes": 63221984
+   "size_bytes": 63221984,
+   "sha256": "14d19c09e5b08c9416ef856fd669118f91813b0772714e3d989adbd70f05ff91"
   },
   {
    "id": "en_US-joe-medium",
@@ -209,7 +223,8 @@
    "license_text": "CC0",
    "dataset_url": "https://github.com/OHF-Voice/voice-datasets",
    "path": "en/en_US/joe/medium/en_US-joe-medium",
-   "size_bytes": 63221984
+   "size_bytes": 63221984,
+   "sha256": "abf4b998e34045cbd00eaf050de2de620f81ded6eb8b85a24b022a1c2b3f08d2"
   },
   {
    "id": "en_US-john-medium",
@@ -223,7 +238,8 @@
    "license_text": "public domain",
    "dataset_url": "https://librivox.org",
    "path": "en/en_US/john/medium/en_US-john-medium",
-   "size_bytes": 63531379
+   "size_bytes": 63531379,
+   "sha256": "789c6c875726e627ddee93d51d8727859abe9c091c3d141591f4b83c2072e988"
   },
   {
    "id": "en_US-kathleen-low",
@@ -237,7 +253,8 @@
    "license_text": "CC0",
    "dataset_url": "https://github.com/rhasspy/dataset-voice-kathleen",
    "path": "en/en_US/kathleen/low/en_US-kathleen-low",
-   "size_bytes": 63104526
+   "size_bytes": 63104526,
+   "sha256": "87adf17f5326bc0782282147a8b9788406236245f0f9b0e68dacb651bc1de8b6"
   },
   {
    "id": "en_US-kristin-medium",
@@ -251,7 +268,8 @@
    "license_text": "public domain",
    "dataset_url": "https://librivox.org",
    "path": "en/en_US/kristin/medium/en_US-kristin-medium",
-   "size_bytes": 63531379
+   "size_bytes": 63531379,
+   "sha256": "5849957f929cbf720c258f8458692d6103fff2f0e3d3b19c8259474bb06a18d4"
   },
   {
    "id": "en_US-libritts-high",
@@ -265,7 +283,8 @@
    "license_text": "CC BY 4.0",
    "dataset_url": "http://www.openslr.org/60/",
    "path": "en/en_US/libritts/high/en_US-libritts-high",
-   "size_bytes": 136673811
+   "size_bytes": 136673811,
+   "sha256": "9127a559e11603f10b366d1a20ac7426826081dbc521de4c2420c57728d73f0f"
   }
  ]
 }
