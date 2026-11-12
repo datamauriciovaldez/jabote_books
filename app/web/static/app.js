@@ -272,6 +272,8 @@ async function enterStep3() {
   $("#speaker").value = s.speaker;
   renderPron();
   await loadVoices();
+  // La voz elegida por defecto debe guardarse antes de estimar (así se mide su velocidad real).
+  if (S.settings.voice !== S.job.settings.voice) await saveSettings();
   await renderEstimate();
 }
 

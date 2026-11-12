@@ -103,3 +103,32 @@ generado con Whisper (solo como herramienta de desarrollo, no se distribuye) y s
   con el primer párrafo (se corrige a mano en el paso 2); el OCR de escaneos muy sucios puede tener errores.
 - **Dependencias nuevas** (todas permisivas): pypdf (BSD-3), python-docx (MIT), pypdfium2 (BSD-3/Apache-2.0),
   pytesseract (Apache-2.0), Pillow (MIT-CMU). Ver `LICENSES.md`.
+
+## 10. Hallazgos de la Fase 3 (prueba larga con la app real)
+
+Prueba: EPUB sintético de 81 174 palabras / 495 653 caracteres / 30 capítulos (≈ 290 páginas; `tools/make_test_epub.py`;
+**no es una novela real**: mide rendimiento y estructura, no calidad literaria; Project Gutenberg está bloqueado por la red
+del entorno de desarrollo). CPU de 4 núcleos, voz `es_ES-davefx-medium`, proxy bloqueado (sin internet), `kill -9` al 25 %.
+
+| Medida | Resultado |
+|---|---|
+| Fragmentos / audio | 2 404 / 8,24 h (29 665 s) |
+| Generación (incluye el `kill -9`) | 1 205 s (≈ 20 min, ≈ 25× tiempo real) |
+| Reanudación tras `kill -9` | estado `paused 600/2404` al reiniciar; 0 fragmentos regenerados |
+| RAM pico del servidor | 582 MB |
+| Exportación M4B + 30 MP3 + ZIP | 1 611 s con el primer diseño → **791 s** tras paralelizar la normalización |
+| Tamaños | M4B 245 MB; ZIP 483 MB; fragmentos FLAC 744 MB; total del proyecto 1,6 GB |
+| M4B | 30 marcadores contiguos (hueco 0,0 s), 8,24 h, AAC 66 kbps, decodifica entero sin errores, salto a mitad de capítulo correcto, −19,1 LUFS |
+
+Problemas encontrados y corregidos:
+1. **Saturación**: con un `loudnorm` único sobre todo el libro y TP=-1,5 el M4B medía **+1,1 dBFS**. Ahora cada capítulo se normaliza una vez
+   (TP=-2,5, a FLAC) y de ese FLAC salen MP3 y M4B: pico final −0,3 dBFS. Prueba de regresión `test_exports_do_not_clip_and_are_levelled`.
+2. **Exportación lenta**: `loudnorm`+codificación en un solo hilo. Ahora normalización y MP3 van en paralelo (hasta 4 ffmpeg). El M4B final
+   (AAC nativo, un solo hilo, ≈ 9 min para 8 h) sigue siendo secuencial.
+3. **Estimación inicial ~10× pesimista** (decía 3,1 h; real 20 min): ahora se mide la velocidad de la voz en este ordenador (una vez,
+   ≈ 2 s) y se guarda por voz. Con la medición: audio 30 763 s frente a 29 665 reales (+3,7 %), generación 1 379 s frente a 1 205 s (+14 %, conservadora),
+   RAM 590 MB frente a 582 MB.
+4. El M4B usa AAC-LC nativo de ffmpeg (sin libfdk, que no es libre), mono, 44,1 kHz, 64 kbps, `+faststart`, portada como `attached_pic`.
+
+Límites: el pico final queda a solo 0,3 dB de 0 dBFS (sin saturar, pero con poco margen); el disco pico estimado (≈ 2,7 GB para 8 h) cuenta los temporales,
+que se borran al terminar. No se ha probado en Apple Books/otros reproductores reales, solo con ffprobe/ffmpeg.

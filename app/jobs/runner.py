@@ -90,7 +90,8 @@ class JobRunner:
                 eta = remaining_chars * (live["synth_seconds"] / live["chars"])
             else:
                 speed = float(job["settings"]["speed"])
-                eta = remaining_chars / (est.CHARS_PER_SECOND * speed * est.measured_rtf())
+                rtf = est.measured_rtf(job["settings"]["voice"]) or est.DEFAULT_RTF
+                eta = remaining_chars / (est.CHARS_PER_SECOND * speed * rtf)
         return {
             "status": status, "error": job["state"].get("error"), "total_chunks": total,
             "done_chunks": done_total, "percent": round(100 * done_total / total, 1) if total else 0.0,
@@ -189,7 +190,7 @@ class JobRunner:
                     dt = time.monotonic() - t0
                     live["chars"] += len(ch.text)
                     live["synth_seconds"] += dt
-                    est.record_rtf(audio.seconds, dt)
+                    est.record_rtf(s["voice"], audio.seconds, dt)
                 if ctl["stop"].is_set():
                     break
             final = ("paused" if ctl["mode"] == "pause" else "cancelled") if ctl["stop"].is_set() else "done"

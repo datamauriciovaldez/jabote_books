@@ -1,13 +1,16 @@
 """Exportación a MP3 por capítulo (ffmpeg por subprocess: normalización, ID3 y portada) y ZIP."""
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
 import tempfile
+import threading
 import unicodedata
 import zipfile
 from collections.abc import Callable
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Any
 
@@ -17,7 +20,10 @@ from app.jobs.audio_io import assemble
 from app.jobs.runner import build_plan
 from app.jobs.store import chunk_dir, job_path
 
-LOUDNORM = "loudnorm=I=-19:TP=-1.5:LRA=11"   # volumen homogéneo entre capítulos (voz hablada)
+# Volumen homogéneo entre capítulos (voz hablada). TP=-2.5: el códec (AAC/MP3) añade hasta ~1 dB de
+# sobrepico al decodificar; con -1.5 el M4B de 8 h medido llegó a +1,1 dBFS (saturaba).
+LOUDNORM = "loudnorm=I=-19:TP=-2.5:LRA=11"
+WORKERS = max(1, min(4, os.cpu_count() or 1))
 
 
 def ffmpeg_path() -> str:
@@ -81,6 +87,7 @@ def render_chapter_wavs(job: dict[str, Any], work: Path,
 
 
 def encode_mp3(job: dict[str, Any], n: int, total: int, title: str, wav: Path, out_dir: Path) -> Path:
+    """MP3 de un capítulo ya normalizado (`wav` puede ser WAV o FLAC)."""
     b = job["book"]
     cover = cover_path(job)
     out = out_dir / f"{n:02d} - {safe_name(title)}.mp3"
@@ -89,7 +96,7 @@ def encode_mp3(job: dict[str, Any], n: int, total: int, title: str, wav: Path, o
         cmd += ["-i", str(cover)]
     cmd += ["-map", "0:a"] + (["-map", "1:v", "-c:v", "copy", "-metadata:s:v", "title=Cover",
                                "-metadata:s:v", "comment=Cover (front)"] if cover else [])
-    cmd += ["-af", LOUDNORM, "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "64k",
+    cmd += ["-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "64k",
             "-id3v2_version", "3", "-write_id3v1", "1",
             *id3_args(title=title, artist=b["author"], album=b["title"], track=n, tracks=total,
                       comment="AudioLibro Libre"),
@@ -103,9 +110,36 @@ def export_mp3(job: dict[str, Any], progress: Callable[[int, int, str], None] | 
     return export_all(job, ["mp3"], progress)["mp3"]
 
 
+def normalize_chapter(wav: Path) -> Path:
+    """Normaliza el volumen de un capítulo a FLAC (sin pérdida, mitad de tamaño) y borra el WAV."""
+    out = wav.with_suffix(".flac")
+    run_ffmpeg(["-i", str(wav), "-af", LOUDNORM, "-ac", "1", "-c:a", "flac", str(out)])
+    wav.unlink()
+    return out
+
+
+def _parallel(fn: Callable[..., Any], jobs: list[tuple], tick: Callable[[str], None] | None,
+              labels: list[str]) -> list[Any]:
+    """Ejecuta `fn(*args)` en varios hilos (cada uno lanza un ffmpeg) conservando el orden."""
+    lock = threading.Lock()
+
+    def run(i: int) -> Any:
+        res = fn(*jobs[i])
+        if tick:
+            with lock:
+                tick(labels[i])
+        return res
+
+    with ThreadPoolExecutor(max_workers=WORKERS) as pool:
+        return list(pool.map(run, range(len(jobs))))
+
+
 def export_all(job: dict[str, Any], formats: list[str],
                progress: Callable[[int, int, str], None] | None = None) -> dict[str, Any]:
-    """Genera los formatos pedidos ("mp3", "m4b"). Devuelve {"mp3": [Path…], "m4b": Path | None}."""
+    """Genera los formatos pedidos ("mp3", "m4b"). Devuelve {"mp3": [Path…], "m4b": Path | None}.
+
+    Cada capítulo se monta y normaliza una sola vez (en paralelo); de ese FLAC salen los MP3 y el M4B.
+    """
     from app.export.m4b import export_m4b, measure
 
     if not formats or not set(formats) <= {"mp3", "m4b"}:
@@ -114,7 +148,7 @@ def export_all(job: dict[str, Any], formats: list[str],
     for old in [*out_dir.glob("*.mp3"), *out_dir.glob("*.m4b"), *out_dir.glob("*.zip")]:
         old.unlink()
     n_ch = len([c for c in job["book"]["chapters"] if c["included"]])
-    total = n_ch * (1 + ("mp3" in formats)) + ("m4b" in formats)
+    total = n_ch * (2 + ("mp3" in formats)) + ("m4b" in formats)
     done = [0]
 
     def tick(label: str) -> None:
@@ -126,13 +160,15 @@ def export_all(job: dict[str, Any], formats: list[str],
     with tempfile.TemporaryDirectory(dir=out_dir) as tmp:
         work = Path(tmp)
         wavs = render_chapter_wavs(job, work, tick)
+        titles = [t for t, _ in wavs]
+        flacs = _parallel(normalize_chapter, [(w,) for _, w in wavs], tick, titles)
         if "mp3" in formats:
-            for n, (title, wav) in enumerate(wavs, 1):
-                tick(title)
-                result["mp3"].append(encode_mp3(job, n, len(wavs), title, wav, out_dir))
+            args = [(job, n, len(flacs), titles[n - 1], flacs[n - 1], out_dir) for n in range(1, len(flacs) + 1)]
+            result["mp3"] = _parallel(encode_mp3, args, tick, titles)
         if "m4b" in formats:
             tick(job["book"]["title"])
-            result["m4b"] = export_m4b(job, [measure(t, w) for t, w in wavs], out_dir, work)
+            result["m4b"] = export_m4b(job, [measure(t, f) for t, f in zip(titles, flacs, strict=True)],
+                                       out_dir, work)
     if progress:
         progress(total, total, "")
     return result

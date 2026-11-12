@@ -7,7 +7,7 @@ from typing import Any
 
 import soundfile as sf
 
-from app.export.mp3 import LOUDNORM, cover_path, run_ffmpeg, safe_name
+from app.export.mp3 import cover_path, run_ffmpeg, safe_name
 
 
 @dataclass(frozen=True)
@@ -57,7 +57,7 @@ def ffmetadata(job: dict[str, Any], chapters: list[ChapterAudio]) -> str:
 
 
 def export_m4b(job: dict[str, Any], chapters: list[ChapterAudio], out_dir: Path, work: Path) -> Path:
-    """Une los capítulos, normaliza el volumen una sola vez para todo el libro y escribe el .m4b."""
+    """Une los capítulos (ya normalizados, en WAV o FLAC) y escribe el .m4b con sus marcadores."""
     out = out_dir / f"{safe_name(job['book']['title'])}.m4b"
     out.unlink(missing_ok=True)
     listing = work / "concat.txt"
@@ -73,7 +73,7 @@ def export_m4b(job: dict[str, Any], chapters: list[ChapterAudio], out_dir: Path,
     if cover:
         cmd += ["-map", "1:v", "-c:v", "copy", "-disposition:v:0", "attached_pic"]
     cmd += ["-map_metadata", str(meta_idx), "-map_chapters", str(meta_idx),
-            "-af", LOUDNORM, "-ac", "1", "-ar", "44100", "-c:a", "aac", "-b:a", "64k",
+            "-ac", "1", "-ar", "44100", "-c:a", "aac", "-b:a", "64k",
             "-movflags", "+faststart", "-f", "mp4", str(out)]
     run_ffmpeg(cmd)
     return out

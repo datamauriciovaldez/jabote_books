@@ -53,3 +53,4 @@ ignore = ["S101", "S603", "S607"]  # assert en tests; subprocess con listas fija
 "tests/*" = ["S"]
 "tools/*" = ["S310"]
 "tools/gen_licenses.py" = ["E501"]  # plantilla de documentación
+"tools/make_test_epub.py" = ["E501", "SIM905", "S311"]  # texto sintético; el azar no es criptográfico

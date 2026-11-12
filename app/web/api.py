@@ -148,7 +148,7 @@ def voice_sample(voice_id: str, body: SampleIn, engine: str = "piper") -> Respon
     text = body.text.strip() or SAMPLES[lang]
     t0 = time.monotonic()
     audio = eng.synthesize(text, voice_id, speed=body.speed, speaker=body.speaker)
-    est.record_rtf(audio.seconds, time.monotonic() - t0)
+    est.record_rtf(voice_id, audio.seconds, time.monotonic() - t0)
     n = min(len(audio.samples), int(SAMPLE_SECONDS * audio.sample_rate))
     samples = audio.samples[:n].copy()
     fade = min(n, int(0.25 * audio.sample_rate))
@@ -265,13 +265,29 @@ def save_settings(job_id: str, body: SettingsIn) -> dict[str, Any]:
     return _public(update_job(job_id, lambda j: j["settings"].update(body.model_dump())))
 
 
+def _benchmark_if_needed(engine: str, voice: str) -> None:
+    """Mide la velocidad real de la voz en este ordenador (≈1–2 s, una sola vez) para estimar bien el tiempo."""
+    if not voice or est.measured_rtf(voice) is not None:
+        return
+    eng = tts.get_engine(engine)
+    if eng.problems() or not eng.is_installed(voice):
+        return
+    text = SAMPLES[catalog.get_raw(voice)["lang"]][:160]
+    eng.synthesize(text, voice)  # calentamiento: carga el modelo
+    t0 = time.monotonic()
+    audio = eng.synthesize(text, voice)
+    est.record_rtf(voice, audio.seconds, time.monotonic() - t0, min_wall=0)
+
+
 @router.get("/jobs/{job_id}/estimate")
 def estimate(job_id: str) -> dict[str, Any]:
     j = load_job(job_id)
     plan = runner.plan(j)
     sizes = [pc.chars for pc in plan]
-    voice_size = catalog.get_raw(j["settings"]["voice"])["size_bytes"] if j["settings"]["voice"] else 63_000_000
-    e = est.estimate(sum(sizes), max(sizes, default=0), speed=float(j["settings"]["speed"]),
+    voice = j["settings"]["voice"]
+    voice_size = catalog.get_raw(voice)["size_bytes"] if voice else 63_000_000
+    _benchmark_if_needed(j["settings"]["engine"], voice)
+    e = est.estimate(sum(sizes), max(sizes, default=0), speed=float(j["settings"]["speed"]), voice_id=voice,
                      voice_size_bytes=voice_size)
     e["chapters"] = len(plan)
     e["system"] = system_info()

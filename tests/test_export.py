@@ -146,3 +146,28 @@ def test_ffmetadata_escapes_special_characters():
     job = {"book": {"title": "A=B; C#D", "author": "X"}}
     out = ffmetadata(job, [ChapterAudio("Uno=1;\\2", Path("a.wav"), 22050, 22050)])
     assert "title=A\\=B\\; C\\#D" in out and "title=Uno\\=1\\;\\\\2" in out and "END=1000" in out
+
+
+def peak_dbfs(path):
+    out = subprocess.run(["ffmpeg", "-nostats", "-i", str(path), "-af", "ebur128=peak=true", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    summary = out[out.rfind("Summary"):]
+    return float(next(ln.split()[1] for ln in summary.splitlines() if ln.strip().startswith("Peak:")))
+
+
+def test_exports_do_not_clip_and_are_levelled(finished_job):
+    """Regresión: con TP=-1.5 el M4B de un libro largo medía +1,1 dBFS (saturaba)."""
+    from app.export.mp3 import export_all
+    from app.jobs.store import load_job
+    res = export_all(load_job(finished_job), ["mp3", "m4b"])
+    assert peak_dbfs(res["m4b"]) < -0.3
+    assert all(peak_dbfs(f) < -0.3 for f in res["mp3"])
+
+
+def test_export_progress_reaches_total(finished_job):
+    from app.export.mp3 import export_all
+    from app.jobs.store import load_job
+    seen = []
+    export_all(load_job(finished_job), ["mp3", "m4b"], lambda d, t, c: seen.append((d, t)))
+    assert seen[-1] == (7, 7) and all(t == 7 for _, t in seen)  # 2 capítulos × (montar+normalizar+mp3) + 1 m4b
+    assert [d for d, _ in seen] == sorted(d for d, _ in seen)  # el progreso nunca retrocede
