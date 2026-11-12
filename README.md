@@ -1,0 +1,32 @@
+# AudioLibro Libre
+
+**ES:** Convierte un libro (`.epub`, `.txt`) en un audiolibro con capítulos. Gratis, en tu ordenador, sin cuentas, sin claves y sin enviar el libro a ningún servidor.
+**EN:** Turn a book (`.epub`, `.txt`) into an audiobook with chapters. Free, on your own computer, no accounts, no API keys, nothing leaves your machine.
+
+> ⚠️ **Aviso legal / Legal notice.** Debes tener los derechos del libro que conviertes. La herramienta no incluye ni distribuye libros con copyright. / You must have the rights to any book you convert. This tool does not include or distribute copyrighted books.
+
+> 🚧 **Estado: fase 1 (MVP).** Funciona: TXT y EPUB, voces Piper, MP3 por capítulo con ID3/portada, ZIP. Pendiente (ver `docs/DECISIONS.md`): PDF/DOCX/MD/OCR, M4B, Kokoro, Docker, instaladores y guía visual completa.
+
+## Probarlo ya (desarrollo)
+
+Necesitas Python 3.10+, `ffmpeg` y `espeak-ng` instalados (Linux: `sudo apt install ffmpeg espeak-ng`).
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+python -m app          # abre http://localhost:8000
+```
+
+En la primera pantalla pulsa **«Probar con Don Quijote»** (dominio público): en ~2 minutos tienes un audiolibro.
+
+## Comprobar el código (sin CI, todo local)
+
+```bash
+./check.sh        # ruff + pytest
+```
+
+## Cómo funciona
+
+Texto → capítulos → fragmentos → fonemas (espeak-ng) → modelo de voz (Piper, ONNX, CPU) → FLAC por fragmento en disco → MP3 con ffmpeg. Cada fragmento se guarda al terminar, así que se puede pausar, cancelar y reanudar sin perder nada.
+
+Licencia: MIT. Dependencias y voces: [`LICENSES.md`](LICENSES.md). Decisiones técnicas: [`docs/DECISIONS.md`](docs/DECISIONS.md).

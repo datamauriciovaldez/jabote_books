@@ -47,3 +47,4 @@ ignore = ["S101", "S603", "S607"]  # assert en tests; subprocess con listas fija
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S"]
 "tools/*" = ["S310"]
+"tools/gen_licenses.py" = ["E501"]  # plantilla de documentación

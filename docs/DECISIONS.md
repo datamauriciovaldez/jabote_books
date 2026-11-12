@@ -70,3 +70,20 @@ ffmpeg se usa solo como ejecutable externo (no se redistribuye en el repo). En D
 2. Licencias de las voces en inglés.
 3. Entradas del ONNX de Kokoro sin `phonemizer`.
 4. Rendimiento: un EPUB de 300 páginas (~90 000 palabras ≈ 10 h de audio) en CPU; se medirá el factor de tiempo real.
+
+## 8. Hallazgos de la Fase 1 (verificados ejecutando la app)
+
+Verificación del audio: no se puede "escuchar" en el entorno de desarrollo, así que se transcribió el audio
+generado con Whisper (solo como herramienta de desarrollo, no se distribuye) y se comparó con el texto.
+
+1. **Secuencia de ids de Piper**: debe ser `BOS, PAD, (fonema, PAD)…, EOS`. Sin el PAD inicial se perdía el
+   arranque de cada frase (error medio 26 % → 11 % con el PAD). Cubierto por `test_phoneme_ids_layout_matches_piper`.
+2. **espeak-ng fusiona líneas consecutivas** en una sola frase: las cláusulas se separan con línea en blanco y,
+   si el recuento no cuadra, se consulta cláusula a cláusula. Sin esto la puntuación se amontonaba al final y las
+   comas perdían su pausa. Cubierto por `test_punctuation_stays_in_place`.
+3. **EPUB sin declaración de codificación**: `lxml` asumía latin-1 ("tÃ­tulo"); ahora se decodifica explícitamente (UTF-8 por defecto).
+4. `CACHE_VERSION` (en `app/jobs/chunking.py`) se sube cuando cambia algo que altera el audio, para no reutilizar fragmentos antiguos.
+5. Resultados medidos (CPU de 4 núcleos): ~6–7× tiempo real con la voz `davefx`; volumen final −19,4 LUFS (objetivo −19);
+   pausa/reanudación con Piper real: los fragmentos ya generados no se regeneran.
+6. Voces: el catálogo auditado tiene 19 voces permisivas (7 es, 12 en). `lessac` (licencia Blizzard), las CC-BY-SA/NC y las
+   de licencia "See URL" se descartan por prudencia.

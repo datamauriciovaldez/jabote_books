@@ -16,34 +16,45 @@ def espeak_binary() -> str | None:
     return shutil.which("espeak-ng") or shutil.which("espeak")
 
 
-def _ipa_lines(lines: list[str], voice: str) -> list[str]:
+def _run_espeak(text: str, voice: str) -> list[str]:
     exe = espeak_binary()
     if not exe:
         raise UserError("espeak_missing")
     proc = subprocess.run(
         [exe, "-q", "--ipa", "-v", voice, "--stdin"],
-        input="\n".join(lines) + "\n", capture_output=True, text=True, encoding="utf-8", check=False,
+        input=text, capture_output=True, text=True, encoding="utf-8", check=False,
     )
     if proc.returncode != 0:
         raise UserError("espeak_failed", proc.stderr.strip()[:200])
-    out = proc.stdout.split("\n")
-    if out and out[-1] == "":
-        out.pop()
-    out += [""] * (len(lines) - len(out))  # por si espeak se come líneas vacías al final
-    return out[: len(lines)]
+    return [ln for ln in proc.stdout.split("\n") if ln.strip()]
+
+
+def _ipa_clauses(clauses: list[str], voice: str) -> list[str]:
+    """IPA de cada cláusula (sin puntuación), en el mismo orden.
+
+    espeak-ng fusiona líneas consecutivas en una sola frase, así que se separan con una línea en
+    blanco (un único proceso para todo el fragmento). Si el recuento no cuadra, se pregunta
+    cláusula a cláusula: más lento pero siempre correcto.
+    """
+    if not clauses:
+        return []
+    out = _run_espeak("\n\n".join(clauses) + "\n", voice)
+    if len(out) == len(clauses):
+        return out
+    return [" ".join(_run_espeak(c + "\n", voice)) for c in clauses]
 
 
 @lru_cache(maxsize=4096)
 def _phonemize_cached(text: str, voice: str) -> str:
-    # Cláusulas separadas por la puntuación (se conserva: Piper la usa para la entonación).
+    # Cláusulas separadas por la puntuación (se conserva: Piper la usa para pausas y entonación).
     parts = _CLAUSE.split(text)
-    clauses = [p for i, p in enumerate(parts) if i % 2 == 0]
-    puncts = [p for i, p in enumerate(parts) if i % 2 == 1] + [""]
-    todo = [c.strip() if re.search(r"\w", c) else "" for c in clauses]
-    ipa = _ipa_lines([c if c else "." for c in todo], voice)
+    clauses = parts[0::2]
+    puncts = [*parts[1::2], ""]
+    speakable = [i for i, c in enumerate(clauses) if re.search(r"\w", c)]
+    ipa = dict(zip(speakable, _ipa_clauses([clauses[i].strip() for i in speakable], voice), strict=True))
     pieces = []
-    for c, phon, punct in zip(todo, ipa, puncts, strict=False):
-        phon = _LANG_SWITCH.sub("", phon).strip() if c else ""
+    for i, punct in enumerate(puncts[: len(clauses)]):
+        phon = _LANG_SWITCH.sub("", ipa.get(i, "")).strip()
         pieces.append(f"{phon}{punct}".strip())
     return " ".join(p for p in pieces if p)
 

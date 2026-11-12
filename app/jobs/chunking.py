@@ -8,7 +8,8 @@ from app.cleaning.normalize import paragraphs_for_speech
 from app.cleaning.pronunciation import Rule, apply_rules
 from app.cleaning.sentences import split_long, split_sentences
 
-CACHE_VERSION = "v1"
+# Subir al cambiar cualquier cosa que altere el audio (fonemas, ids, motor): invalida la caché en disco.
+CACHE_VERSION = "v2"
 DEFAULT_MAX_CHARS = 300
 
 

@@ -1,1 +1,317 @@
-<!doctype html><title>x</title>
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AudioLibro Libre</title>
+  <meta name="description" content="Convierte un libro en audiolibro, gratis y en local.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="app.skip">Saltar al contenido</a>
+
+  <header class="top">
+    <div class="brand">
+      <p class="logo" aria-hidden="true">🎧</p>
+      <div>
+        <h1 data-i18n="app.title">AudioLibro Libre</h1>
+        <p class="tagline" data-i18n="app.tagline"></p>
+      </div>
+    </div>
+    <nav class="tools" aria-label="Menu">
+      <button type="button" id="btn-projects" class="btn ghost" data-i18n="nav.projects"></button>
+      <button type="button" id="btn-tutorial" class="btn ghost" data-i18n="nav.tutorial"></button>
+      <label class="lang">
+        <span class="sr-only" data-i18n="nav.language"></span>
+        <select id="lang">
+          <option value="es">Español</option>
+          <option value="en">English</option>
+        </select>
+      </label>
+    </nav>
+  </header>
+
+  <div id="sys-banner" class="notice warn" hidden role="status"></div>
+
+  <nav aria-label="Pasos" data-i18n-attr="aria-label=steps.label">
+    <ol id="stepper" class="stepper">
+      <li><button type="button" data-step="1"><span class="num">1</span><span data-i18n="steps.1"></span></button></li>
+      <li><button type="button" data-step="2"><span class="num">2</span><span data-i18n="steps.2"></span></button></li>
+      <li><button type="button" data-step="3"><span class="num">3</span><span data-i18n="steps.3"></span></button></li>
+      <li><button type="button" data-step="4"><span class="num">4</span><span data-i18n="steps.4"></span></button></li>
+      <li><button type="button" data-step="5"><span class="num">5</span><span data-i18n="steps.5"></span></button></li>
+    </ol>
+  </nav>
+
+  <div id="error-box" class="notice error" role="alert" hidden></div>
+
+  <main id="main" tabindex="-1">
+
+    <!-- ============ PASO 1 ============ -->
+    <section id="step-1" class="step" aria-labelledby="h-1">
+      <h2 id="h-1" tabindex="-1" data-i18n="s1.title"></h2>
+      <p class="tutorial-tip" hidden></p>
+      <details class="explain" open>
+        <summary data-i18n="common.what"></summary>
+        <p data-i18n="s1.explain"></p>
+      </details>
+
+      <div class="notice legal">
+        <h3 data-i18n="legal.title"></h3>
+        <p data-i18n="legal.text"></p>
+        <label class="check"><input type="checkbox" id="legal-accept"> <span data-i18n="legal.accept"></span></label>
+      </div>
+
+      <div class="card" id="upload-card">
+        <div class="field">
+          <label for="book-lang" data-i18n="s1.language"></label>
+          <select id="book-lang">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
+          <p class="hint" data-i18n="s1.language_help"></p>
+        </div>
+        <div class="drop" id="drop">
+          <label for="file" class="btn primary" data-i18n="s1.choose"></label>
+          <input type="file" id="file" accept=".txt,.epub" class="file-input">
+          <span class="muted" data-i18n="s1.drop"></span>
+        </div>
+        <p class="hint" id="formats"></p>
+        <p id="upload-status" class="status" role="status"></p>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="s1.demo_title"></h3>
+        <p data-i18n="s1.demo_text"></p>
+        <div class="row">
+          <button type="button" class="btn secondary" id="demo-es" data-i18n="s1.demo_es"></button>
+          <button type="button" class="btn secondary" id="demo-en" data-i18n="s1.demo_en"></button>
+        </div>
+      </div>
+
+      <div class="card" id="projects-card">
+        <h3 data-i18n="s1.projects_title"></h3>
+        <p id="projects-empty" class="muted" data-i18n="s1.projects_empty"></p>
+        <ul id="project-list" class="plain"></ul>
+      </div>
+    </section>
+
+    <!-- ============ PASO 2 ============ -->
+    <section id="step-2" class="step" aria-labelledby="h-2" hidden>
+      <h2 id="h-2" tabindex="-1" data-i18n="s2.title"></h2>
+      <p class="tutorial-tip" hidden></p>
+      <details class="explain" open>
+        <summary data-i18n="common.what"></summary>
+        <p data-i18n="s2.explain"></p>
+      </details>
+
+      <div class="grid3">
+        <div class="field"><label for="meta-title" data-i18n="s2.book_title"></label><input id="meta-title" type="text" maxlength="300"></div>
+        <div class="field"><label for="meta-author" data-i18n="s2.author"></label><input id="meta-author" type="text" maxlength="300"></div>
+        <div class="field"><label for="meta-lang" data-i18n="s2.language"></label>
+          <select id="meta-lang"><option value="es">Español</option><option value="en">English</option></select></div>
+      </div>
+
+      <p id="skip-hint" class="hint" hidden data-i18n="s2.skip_hint"></p>
+      <p id="chapter-summary" class="status" role="status"></p>
+
+      <div class="split">
+        <div class="card">
+          <h3 id="chapters-h" data-i18n="s2.chapters"></h3>
+          <ul id="chapter-list" class="plain chapters" aria-labelledby="chapters-h"></ul>
+          <button type="button" class="btn ghost" id="chapter-add" data-i18n="s2.add"></button>
+        </div>
+        <div class="card" id="editor">
+          <p id="editor-empty" class="muted" data-i18n="s2.select_one"></p>
+          <div id="editor-body" hidden>
+            <div class="field"><label for="ch-title" data-i18n="s2.chapter_title"></label><input id="ch-title" type="text" maxlength="300"></div>
+            <div class="field"><label for="ch-text" data-i18n="s2.chapter_text"></label><textarea id="ch-text" rows="16"></textarea></div>
+            <p id="ch-count" class="hint"></p>
+            <button type="button" class="btn danger" id="chapter-del" data-i18n="s2.delete"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-go="1" data-i18n="common.back"></button>
+        <button type="button" class="btn primary" id="s2-next" data-i18n="common.next"></button>
+      </div>
+    </section>
+
+    <!-- ============ PASO 3 ============ -->
+    <section id="step-3" class="step" aria-labelledby="h-3" hidden>
+      <h2 id="h-3" tabindex="-1" data-i18n="s3.title"></h2>
+      <p class="tutorial-tip" hidden></p>
+      <details class="explain" open>
+        <summary data-i18n="common.what"></summary>
+        <p data-i18n="s3.explain"></p>
+      </details>
+
+      <div class="card">
+        <div class="field narrow">
+          <label for="voice-lang" data-i18n="s3.language"></label>
+          <select id="voice-lang"><option value="es">Español</option><option value="en">English</option></select>
+        </div>
+        <h3 id="voices-h" data-i18n="s3.voices"></h3>
+        <p class="hint" data-i18n="s3.voice_help"></p>
+        <div id="voice-list" class="voices" role="radiogroup" aria-labelledby="voices-h"></div>
+        <p id="sample-status" class="status" role="status"></p>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="s3.settings"></h3>
+        <div class="field" id="speaker-field" hidden>
+          <label for="speaker" data-i18n="s3.speaker"></label>
+          <input id="speaker" type="number" min="0" value="0">
+        </div>
+        <div class="field">
+          <label for="speed"><span data-i18n="s3.speed"></span>: <output id="speed-out" for="speed">1.0</output>×</label>
+          <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-speed" data-i18n-attr="aria-label=common.help">?</button>
+          <input id="speed" type="range" min="0.6" max="1.5" step="0.05" value="1">
+          <p id="help-speed" class="hint help-text" hidden data-i18n="help.speed"></p>
+        </div>
+        <div class="grid2">
+          <div class="field">
+            <label for="pause-p" data-i18n="s3.pause_p"></label>
+            <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-pp" data-i18n-attr="aria-label=common.help">?</button>
+            <input id="pause-p" type="number" min="0" max="5" step="0.1" value="0.7">
+            <p id="help-pp" class="hint help-text" hidden data-i18n="help.pause_p"></p>
+          </div>
+          <div class="field">
+            <label for="pause-c" data-i18n="s3.pause_c"></label>
+            <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-pc" data-i18n-attr="aria-label=common.help">?</button>
+            <input id="pause-c" type="number" min="0" max="15" step="0.5" value="2">
+            <p id="help-pc" class="hint help-text" hidden data-i18n="help.pause_c"></p>
+          </div>
+        </div>
+        <div class="field">
+          <label class="check"><input type="checkbox" id="read-titles" checked> <span data-i18n="s3.read_titles"></span></label>
+          <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-rt" data-i18n-attr="aria-label=common.help">?</button>
+          <p id="help-rt" class="hint help-text" hidden data-i18n="help.read_titles"></p>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="s3.pron_title"></h3>
+        <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-pron" data-i18n-attr="aria-label=common.help">?</button>
+        <p id="help-pron" class="hint help-text" hidden data-i18n="help.pron"></p>
+        <p class="hint" data-i18n="s3.pron_explain"></p>
+        <div id="pron-list"></div>
+        <button type="button" class="btn ghost" id="pron-add" data-i18n="s3.pron_add"></button>
+      </div>
+
+      <div class="card" id="estimate-card" aria-live="polite">
+        <h3 data-i18n="s3.est_title"></h3>
+        <ul id="estimate" class="plain"></ul>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-go="2" data-i18n="common.back"></button>
+        <button type="button" class="btn primary" id="s3-next" data-i18n="common.next"></button>
+      </div>
+    </section>
+
+    <!-- ============ PASO 4 ============ -->
+    <section id="step-4" class="step" aria-labelledby="h-4" hidden>
+      <h2 id="h-4" tabindex="-1" data-i18n="s4.title"></h2>
+      <p class="tutorial-tip" hidden></p>
+      <details class="explain" open>
+        <summary data-i18n="common.what"></summary>
+        <p data-i18n="s4.explain"></p>
+      </details>
+
+      <div class="card">
+        <p id="gen-state" class="big" role="status"></p>
+        <div class="row">
+          <button type="button" class="btn primary" id="gen-start"></button>
+          <button type="button" class="btn secondary" id="gen-pause" data-i18n="s4.pause" hidden></button>
+          <button type="button" class="btn danger" id="gen-cancel" data-i18n="s4.cancel" hidden></button>
+        </div>
+        <label class="sr-only" for="gen-bar" id="gen-bar-label"></label>
+        <progress id="gen-bar" max="100" value="0"></progress>
+        <p id="gen-overall" class="hint"></p>
+        <p id="gen-times" class="hint"></p>
+        <p class="hint" data-i18n="s4.safe"></p>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="s4.chapters"></h3>
+        <ul id="gen-chapters" class="plain"></ul>
+        <p id="preview-title" class="hint"></p>
+        <audio id="preview-audio" controls preload="none" hidden></audio>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-go="3" data-i18n="common.back"></button>
+        <button type="button" class="btn primary" id="s4-next" data-i18n="common.next"></button>
+      </div>
+    </section>
+
+    <!-- ============ PASO 5 ============ -->
+    <section id="step-5" class="step" aria-labelledby="h-5" hidden>
+      <h2 id="h-5" tabindex="-1" data-i18n="s5.title"></h2>
+      <p class="tutorial-tip" hidden></p>
+      <details class="explain" open>
+        <summary data-i18n="common.what"></summary>
+        <p data-i18n="s5.explain"></p>
+      </details>
+
+      <div class="card">
+        <h3 data-i18n="s5.cover"></h3>
+        <p class="hint" data-i18n="s5.cover_help"></p>
+        <div class="cover-row">
+          <img id="cover-img" alt="" width="120" height="160" hidden>
+          <span id="cover-none" class="muted" data-i18n="s5.cover_none"></span>
+          <div>
+            <label for="cover-file" class="btn secondary" data-i18n="s5.cover_choose"></label>
+            <input type="file" id="cover-file" accept="image/png,image/jpeg" class="file-input">
+          </div>
+        </div>
+        <p id="export-meta" class="hint"></p>
+      </div>
+
+      <div class="card">
+        <button type="button" class="btn primary" id="export-start" data-i18n="s5.export"></button>
+        <progress id="export-bar" max="100" value="0" hidden aria-label="Export"></progress>
+        <p id="export-status" class="status" role="status"></p>
+        <div id="export-result" hidden>
+          <p class="big" data-i18n="s5.done"></p>
+          <a id="zip-link" class="btn primary" href="#" data-i18n="s5.zip"></a>
+          <p data-i18n="s5.files"></p>
+          <ul id="mp3-list" class="plain"></ul>
+          <p class="hint" data-i18n="s5.credits"></p>
+          <p class="hint" data-i18n="s5.m4b"></p>
+        </div>
+      </div>
+
+      <div class="nav-row">
+        <button type="button" class="btn ghost" data-go="4" data-i18n="common.back"></button>
+        <button type="button" class="btn secondary" id="new-book" data-i18n="s5.new"></button>
+      </div>
+    </section>
+  </main>
+
+  <footer class="legal-footer">
+    <p data-i18n="legal.footer"></p>
+    <p class="muted">AudioLibro Libre · MIT · LICENSES.md</p>
+  </footer>
+
+  <dialog id="tutorial" aria-labelledby="tut-h">
+    <form method="dialog">
+      <h2 id="tut-h" data-i18n="tutorial.title"></h2>
+      <p data-i18n="tutorial.intro"></p>
+      <ol>
+        <li data-i18n="tutorial.s1"></li><li data-i18n="tutorial.s2"></li><li data-i18n="tutorial.s3"></li>
+        <li data-i18n="tutorial.s4"></li><li data-i18n="tutorial.s5"></li>
+      </ol>
+      <div class="row">
+        <button class="btn primary" id="tut-go" value="go" data-i18n="tutorial.go"></button>
+        <button class="btn ghost" value="close" data-i18n="common.close"></button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="live" class="sr-only" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

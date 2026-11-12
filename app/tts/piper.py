@@ -106,7 +106,7 @@ class PiperEngine(TTSEngine):
     @staticmethod
     def _ids(phonemes: str, id_map: dict[str, list[int]]) -> list[int]:
         pad, bos, eos = id_map["_"], id_map["^"], id_map["$"]
-        ids = list(bos)
+        ids = [*bos, *pad]  # Piper: BOS, PAD, (fonema, PAD)…, EOS. Sin ese primer PAD se come el inicio.
         for ch in unicodedata.normalize("NFD", phonemes):
             if ch in id_map:
                 ids.extend(id_map[ch])
