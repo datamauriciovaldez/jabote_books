@@ -77,7 +77,7 @@
   "s2.selected": "Capítulo seleccionado",
   "s2.summary": "{n} de {total} capítulos incluidos",
   "s3.title": "3. Elige la voz y los ajustes",
-  "s3.explain": "Aquí decides cómo sonará el libro. Las voces se descargan una sola vez (unos 60 MB) y después funcionan sin internet. Pulsa «Escuchar muestra» para oír 10 segundos antes de procesar el libro entero.",
+  "s3.explain": "Aquí decides cómo sonará el libro. Las voces se descargan una sola vez (unos 60 MB las de Piper; Kokoro baja un modelo de 330 MB) y después funcionan sin internet. Pulsa «Escuchar muestra» para oír 10 segundos antes de procesar el libro entero.",
   "s3.language": "Idioma de las voces",
   "s3.voices": "Voces disponibles",
   "s3.voice_help": "Cada voz tiene su licencia. Todas las que se muestran permiten uso comercial.",
@@ -257,5 +257,9 @@
   "s5.m4b_link": "Descargar audiolibro M4B",
   "s5.m4b_hint": "Funciona en Apple Books, VLC, Audiobookshelf, Smart Audiobook Player y la mayoría de apps de audiolibros.",
   "errors.export_format_none.msg": "No has elegido ningún formato.",
-  "errors.export_format_none.hint": "Marca M4B, MP3 o ambos y vuelve a pulsar «Crear»."
+  "errors.export_format_none.hint": "Marca M4B, MP3 o ambos y vuelve a pulsar «Crear».",
+  "s3.engine": "Motor de voz",
+  "s3.engine_piper": "Piper — muy rápido y buena calidad (recomendado)",
+  "s3.engine_kokoro": "Kokoro — más natural, pero mucho más lento (descarga de 330 MB)",
+  "help.engine": "Piper convierte un libro entero en minutos o pocas horas, incluso en un ordenador modesto. Kokoro suena más natural, pero tarda varias veces más (un libro de 300 páginas puede llevar unas 3 horas en un portátil de 4 núcleos) y usa más memoria (≈1 GB). Prueba la muestra de 10 segundos con cada uno antes de decidir."
 }

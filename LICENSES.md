@@ -67,6 +67,30 @@ no especificada. La atribución exigida se incluye automáticamente en `CREDITOS
 | `es_MX-ald-medium` | es_MX | medium | Unlicense | no | https://huggingface.co/datasets/rmcpantoja/Ald_Mexican_Spanish_speech_dataset |
 | `es_MX-claude-high` | es_MX | high | Apache-2.0 | sí | https://huggingface.co/spaces/HirCoir/Piper-TTS-Spanish |
 
+## Motor Kokoro (opcional)
+
+Modelo [Kokoro-82M](https://huggingface.co/hexgrad/Kokoro-82M) de hexgrad, en su versión ONNX de
+[onnx-community/Kokoro-82M-v1.0-ONNX](https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX).
+**Licencia de los pesos y de las voces: Apache-2.0** (comprobada en la ficha oficial de ambos repositorios por
+`tools/audit_kokoro.py`, que se niega a generar el catálogo si cambia). Se usa `model.onnx` (fp32, 326 MB): la variante
+int8 resultó más lenta en CPU.
+
+Inferencia propia (`app/tts/kokoro.py`, MIT) con `onnxruntime` y espeak-ng externo. **No se usan** los paquetes
+`kokoro-onnx` ni `phonemizer` (GPL-3). El vocabulario de símbolos (`app/tts/kokoro_vocab.json`, 114 entradas) procede del
+`config.json` oficial (Apache-2.0).
+
+**Datos de entrenamiento** (según el README oficial): audio permisivo o no protegido por copyright (Apache, MIT, etc.) y
+audio sintético de proveedores cerrados; también audio CC BY (p. ej. SIWIS y Koniwa, que no corresponden a voces
+en español ni en inglés). La atribución completa está en el README del modelo.
+
+Voces en español e inglés del catálogo (31 voces; todas Apache-2.0):
+
+| Idioma | Voces |
+|---|---|
+| Inglés (EE. UU.) | `af_alloy`, `af_aoede`, `af_bella`, `af_heart`, `af_jessica`, `af_kore`, `af_nicole`, `af_nova`, `af_river`, `af_sarah`, `af_sky`, `am_adam`, `am_echo`, `am_eric`, `am_fenrir`, `am_liam`, `am_michael`, `am_onyx`, `am_puck`, `am_santa` |
+| Inglés (Reino Unido) | `bf_alice`, `bf_emma`, `bf_isabella`, `bf_lily`, `bm_daniel`, `bm_fable`, `bm_george`, `bm_lewis` |
+| Español | `ef_dora`, `em_alex`, `em_santa` |
+
 Para regenerar el catálogo: `python tools/audit_voices.py > app/tts/voices.json` y luego
 `python tools/gen_licenses.py > LICENSES.md`.
 

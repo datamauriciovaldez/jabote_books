@@ -132,3 +132,30 @@ Problemas encontrados y corregidos:
 
 Límites: el pico final queda a solo 0,3 dB de 0 dBFS (sin saturar, pero con poco margen); el disco pico estimado (≈ 2,7 GB para 8 h) cuenta los temporales,
 que se borran al terminar. No se ha probado en Apple Books/otros reproductores reales, solo con ffprobe/ffmpeg.
+
+## 11. Fase 4: Kokoro-82M (verificado; se incluye como motor opcional)
+
+**Licencia (fuente oficial, API de Hugging Face):** `hexgrad/Kokoro-82M` y `onnx-community/Kokoro-82M-v1.0-ONNX` declaran `apache-2.0`.
+El README declara entrenamiento "exclusivamente con audio permisivo/no protegido por copyright" (algo de CC BY, p. ej. SIWIS y Koniwa; ver `LICENSES.md`).
+
+**Implementación sin GPL:** `kokoro-onnx` depende de `phonemizer` (GPL-3), así que no se usa. Se reimplementa la inferencia (`app/tts/kokoro.py`):
+fonemas IPA con nuestro espeak-ng externo → ids del vocabulario oficial (`config.json`, 114 símbolos, ids 1–177; el 0 es relleno) →
+`model.onnx` con `input_ids` (relleno 0 al inicio y al final), `style` (fila `n_tokens-1` de la matriz 510×256 de la voz) y `speed` → audio a 24 kHz.
+Las frases se agrupan hasta 400 tokens (Kokoro rinde mal con frases cortas; límite del modelo: 510).
+
+**Medido (CPU de 4 núcleos), mismo capítulo de Cervantes y reconocimiento de voz como proxy de inteligibilidad:**
+
+| | Piper (davefx) | Kokoro (ef_dora) |
+|---|---|---|
+| Diferencia con el texto (Whisper base) | 18 % | **12 %** (10 % con em_alex, ya en MP3) |
+| Velocidad | ≈ 25× tiempo real | ≈ 3,5× tiempo real |
+| Descarga | 63 MB por voz | 326 MB (modelo común) + 0,5 MB por voz |
+| RAM pico | 582 MB | 1 095 MB |
+| Voces en español | 7 | 3 (ef_dora, em_alex, em_santa) |
+
+- **Un libro de ≈ 8 h de audio tardaría ≈ 2,4 h con Kokoro** frente a ≈ 20 min con Piper. Por eso Piper sigue siendo el motor por defecto y la interfaz lo explica.
+- **Inglés:** Kokoro usa `misaki` como generador de pronunciación principal (no disponible sin dependencias extra); con espeak-ng directo
+  (en-us / en-gb) las frases de prueba dieron 0 % de diferencia con af_heart y bf_emma. Es una aproximación: para algunas palabras `misaki` podría sonar mejor.
+- **Variante int8 (`model_quantized.onnx`, 92 MB) descartada:** en este CPU fue **más lenta** (0,8× tiempo real) que fp32 (≈ 4×). Se usa fp32.
+- **Catálogo:** 31 voces es/en generadas por `tools/audit_kokoro.py`, que verifica la licencia y el SHA-256 de cada archivo; se descargan con verificación.
+- Los tests no descargan el modelo (sesión ONNX simulada); la prueba real se activa con `AUDIOLIBRO_TEST_DOWNLOADS=1`.

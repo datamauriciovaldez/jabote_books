@@ -49,6 +49,15 @@ class TTSEngine(ABC):
     def list_voices(self, lang: str | None = None) -> list[VoiceInfo]:
         """Voces del catálogo (con `installed` informado)."""
 
+    def voice_info(self, voice_id: str) -> VoiceInfo:
+        """Datos de una voz del catálogo. Lanza NotFound("voice_unknown") si no existe."""
+        from app.errors import NotFound
+
+        for v in self.list_voices():
+            if v.id == voice_id:
+                return v
+        raise NotFound("voice_unknown", voice=voice_id)
+
     @abstractmethod
     def is_installed(self, voice_id: str) -> bool: ...
 

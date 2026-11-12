@@ -25,3 +25,5 @@ def jobs_dir() -> Path:
 
 
 HF_BASE = os.environ.get("AUDIOLIBRO_HF_BASE", "https://huggingface.co/rhasspy/piper-voices/resolve/main")
+HF_KOKORO_BASE = os.environ.get("AUDIOLIBRO_HF_KOKORO_BASE",
+                                "https://huggingface.co/onnx-community/Kokoro-82M-v1.0-ONNX/resolve/main")

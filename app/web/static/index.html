@@ -152,6 +152,15 @@
       </details>
 
       <div class="card">
+        <div class="field">
+          <label for="engine" data-i18n="s3.engine"></label>
+          <button type="button" class="help-btn" aria-expanded="false" aria-controls="help-engine" data-i18n-attr="aria-label=common.help">?</button>
+          <select id="engine">
+            <option value="piper" data-i18n="s3.engine_piper"></option>
+            <option value="kokoro" data-i18n="s3.engine_kokoro"></option>
+          </select>
+          <p id="help-engine" class="hint help-text" hidden data-i18n="help.engine"></p>
+        </div>
         <div class="field narrow">
           <label for="voice-lang" data-i18n="s3.language"></label>
           <select id="voice-lang"><option value="es">Español</option><option value="en">English</option></select>

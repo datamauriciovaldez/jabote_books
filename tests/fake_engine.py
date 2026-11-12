@@ -22,6 +22,11 @@ class FakeEngine(TTSEngine):
     def list_voices(self, lang=None):
         return [VoiceInfo("fake-voice", "piper", "es", "es_ES", "fake", "low", 1, "CC0-1.0", False, "", 1000, True)]
 
+    def voice_info(self, voice_id):
+        lang = "en" if voice_id.startswith("en") else "es"
+        return VoiceInfo(voice_id, "piper", lang, f"{lang}_XX", voice_id, "low", 1, "CC0-1.0", False, "", 1000,
+                         voice_id in self.installed)
+
     def is_installed(self, voice_id):
         return voice_id in self.installed
 

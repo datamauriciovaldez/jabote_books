@@ -4,7 +4,11 @@ import { t, setLang, currentLang, applyStatic, fmtDuration, fmtBytes } from "./i
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
-const RECOMMENDED = { es: "es_ES-davefx-medium", en: "en_US-joe-medium" };
+const RECOMMENDED = {
+  piper: { es: "es_ES-davefx-medium", en: "en_US-joe-medium" },
+  kokoro: { es: "ef_dora", en: "af_heart" },
+};
+const recommended = (v) => RECOMMENDED[v.engine]?.[v.lang];
 const CHARS_PER_SECOND = 14.5;
 
 const S = {
@@ -263,6 +267,7 @@ async function saveSettings() {
 
 async function enterStep3() {
   const s = S.settings;
+  $("#engine").value = s.engine;
   $("#voice-lang").value = S.job.book.language;
   $("#speed").value = s.speed;
   $("#speed-out").textContent = Number(s.speed).toFixed(2).replace(/0$/, "");
@@ -278,8 +283,8 @@ async function enterStep3() {
 }
 
 async function loadVoices() {
-  S.voices = await api.voices($("#voice-lang").value);
-  const rank = (v) => (v.id === RECOMMENDED[v.lang] ? 0 : 1);
+  S.voices = await api.voices($("#voice-lang").value, S.settings.engine);
+  const rank = (v) => (v.id === recommended(v) ? 0 : 1);
   const qual = { medium: 0, high: 1, low: 2, x_low: 3 };
   S.voices.sort((a, b) => rank(a) - rank(b) || (qual[a.quality] ?? 9) - (qual[b.quality] ?? 9) || a.id.localeCompare(b.id));
   if (!S.settings.voice || !S.voices.some((v) => v.id === S.settings.voice)) {
@@ -302,9 +307,9 @@ function renderVoices() {
           S.settings.voice = v.id; S.settings.speaker = 0; $("#speaker").value = 0; renderVoices(); scheduleSave();
         } }),
         el("span", {}, `${v.name} (${v.locale.replace("_", "-")})`,
-          v.id === RECOMMENDED[v.lang] ? el("span", { class: "badge", text: t("s3.recommended") }) : "",
+          v.id === recommended(v) ? el("span", { class: "badge", text: t("s3.recommended") }) : "",
           v.installed ? el("span", { class: "badge", text: t("s3.installed") }) : "")),
-      el("p", { class: "meta", text: `${t("s3.quality", { q: t(`s3.quality.${v.quality}`) })} · ${fmtBytes(v.size_bytes)}${v.speakers > 1 ? " · " + t("s3.speakers", { n: v.speakers }) : ""}` }),
+      el("p", { class: "meta", text: `${t("s3.quality", { q: t(`s3.quality.${v.quality}`) })}${v.size_bytes ? " · " + fmtBytes(v.size_bytes) : ""}${v.speakers > 1 ? " · " + t("s3.speakers", { n: v.speakers }) : ""}` }),
       el("p", { class: "meta fine", text: t("s3.license", { license: v.license }) + (v.attribution_required ? " — " + t("s3.attribution") : "") }),
       bar,
       el("div", { class: "row" },
@@ -324,17 +329,18 @@ async function installVoice(v, card, btn) {
   if (btn) btn.disabled = true;
   bar.hidden = false;
   try {
-    let st = await api.installVoice(v.id);
+    let st = await api.installVoice(v.id, v.engine);
     while (st.state === "running") {
       const pct = st.total ? Math.round((100 * st.done) / st.total) : 0;
       bar.value = pct;
       bar.setAttribute("aria-label", t("s3.downloading", { pct }));
       $("#sample-status").textContent = t("s3.downloading", { pct });
       await new Promise((r) => setTimeout(r, 600));
-      st = await api.installStatus(v.id);
+      st = await api.installStatus(v.id, v.engine);
     }
     if (st.state === "error") throw new ApiError(st.error.code, st.error.detail, st.error.params);
     v.installed = true;
+    v.size_bytes = 0;
     $("#sample-status").textContent = "";
     announce(`${v.name}: ${t("s3.installed")}`);
     renderVoices();
@@ -353,7 +359,7 @@ async function playSample(v, card, btn) {
   btn.disabled = true;
   $("#sample-status").textContent = t("s3.sample_loading");
   try {
-    const blob = await api.sample(v.id, { speed: Number($("#speed").value), speaker: Number($("#speaker").value || 0) });
+    const blob = await api.sample(v.id, { speed: Number($("#speed").value), speaker: Number($("#speaker").value || 0) }, v.engine);
     if (S.audio) S.audio.pause();
     S.audio = new Audio(URL.createObjectURL(blob));
     await S.audio.play();
@@ -562,6 +568,7 @@ function bind() {
   $("#s2-next").addEventListener("click", () => goStep(3));
 
   $("#voice-lang").addEventListener("change", () => { S.settings.voice = ""; guard(loadVoices); });
+  $("#engine").addEventListener("change", (e) => guard(async () => { S.settings.engine = e.target.value; S.settings.voice = ""; await loadVoices(); scheduleSave(); }));
   $("#speed").addEventListener("input", (e) => { $("#speed-out").textContent = Number(e.target.value).toFixed(2).replace(/0$/, ""); scheduleSave(); });
   ["#pause-p", "#pause-c", "#read-titles", "#speaker"].forEach((s) => $(s).addEventListener("change", scheduleSave));
   $("#pron-add").addEventListener("click", () => { collectSettings(); S.settings.pronunciation.push({ source: "", spoken: "", whole_word: true, case_sensitive: true }); renderPron(); $$(".pron-from").at(-1).focus(); });

@@ -28,10 +28,10 @@ async function request(method, url, body) {
 const q = encodeURIComponent;
 export const api = {
   system: () => request("GET", "api/system"),
-  voices: (lang) => request("GET", `api/voices?lang=${q(lang)}`),
-  installVoice: (id) => request("POST", `api/voices/${q(id)}/install`),
-  installStatus: (id) => request("GET", `api/voices/${q(id)}/install`),
-  sample: (id, body) => request("POST", `api/voices/${q(id)}/sample`, body),
+  voices: (lang, engine) => request("GET", `api/voices?lang=${q(lang)}&engine=${q(engine)}`),
+  installVoice: (id, engine) => request("POST", `api/voices/${q(id)}/install?engine=${q(engine)}`),
+  installStatus: (id, engine) => request("GET", `api/voices/${q(id)}/install?engine=${q(engine)}`),
+  sample: (id, body, engine) => request("POST", `api/voices/${q(id)}/sample?engine=${q(engine)}`, body),
   demo: (lang) => request("POST", `api/jobs/demo?lang=${q(lang)}`),
   upload: (file, lang, token) => { const f = new FormData(); f.append("file", file); f.append("language", lang); f.append("token", token); return request("POST", "api/jobs", f); },
   uploadProgress: (token) => request("GET", `api/uploads/${q(token)}`),

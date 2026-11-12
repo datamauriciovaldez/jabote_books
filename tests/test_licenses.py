@@ -26,3 +26,11 @@ def test_no_ci_or_paid_dependencies():
               "TTS==", "openai", "elevenlabs")
     deps = (ROOT / "pyproject.toml").read_text(encoding="utf-8").lower()
     assert not [b for b in banned if b.lower() in deps]
+
+
+def test_kokoro_catalog_is_apache_and_documented():
+    cat = json.loads((ROOT / "app/tts/kokoro_voices.json").read_text(encoding="utf-8"))
+    assert cat["license"] == "Apache-2.0" and cat["model"]["path"] == "onnx/model.onnx"
+    doc = (ROOT / "LICENSES.md").read_text(encoding="utf-8")
+    assert "Apache-2.0" in doc and all(f"`{v['id']}`" in doc for v in cat["voices"])
+    assert "No se usan" in doc and "phonemizer" in doc   # queda documentado que los paquetes GPL no se usan

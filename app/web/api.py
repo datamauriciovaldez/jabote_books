@@ -33,7 +33,6 @@ from app.jobs.store import (
     load_job,
     update_job,
 )
-from app.tts import catalog
 from app.web.system import system_info
 
 router = APIRouter(prefix="/api")
@@ -110,12 +109,12 @@ def voices(lang: str | None = None, engine: str = "piper") -> list[dict[str, Any
 @router.post("/voices/{voice_id}/install")
 def install_voice(voice_id: str, engine: str = "piper") -> dict[str, Any]:
     eng = tts.get_engine(engine)
-    catalog.get_raw(voice_id)
+    info = eng.voice_info(voice_id)
     if eng.is_installed(voice_id):
         return {"state": "done", "done": 1, "total": 1}
     if _installs.get(voice_id, {}).get("state") == "running":
         return _installs[voice_id]
-    st = {"state": "running", "done": 0, "total": catalog.get_raw(voice_id)["size_bytes"], "error": None}
+    st = {"state": "running", "done": 0, "total": info.size_bytes, "error": None}
     _installs[voice_id] = st
 
     def work() -> None:
@@ -144,7 +143,7 @@ def voice_sample(voice_id: str, body: SampleIn, engine: str = "piper") -> Respon
     eng = tts.get_engine(engine)
     if probs := eng.problems():
         raise UserError(probs[0])
-    lang = catalog.get_raw(voice_id)["lang"]
+    lang = eng.voice_info(voice_id).lang
     text = body.text.strip() or SAMPLES[lang]
     t0 = time.monotonic()
     audio = eng.synthesize(text, voice_id, speed=body.speed, speaker=body.speaker)
@@ -259,10 +258,19 @@ def save_book(job_id: str, body: BookIn) -> dict[str, Any]:
 def save_settings(job_id: str, body: SettingsIn) -> dict[str, Any]:
     if load_job(job_id)["state"]["status"] in ("running", "queued"):
         raise UserError("job_running")
-    tts.get_engine(body.engine)
+    engine = tts.get_engine(body.engine)
     if body.voice:
-        catalog.get_raw(body.voice)
+        engine.voice_info(body.voice)
     return _public(update_job(job_id, lambda j: j["settings"].update(body.model_dump())))
+
+
+def _model_bytes(engine: str, voice: str) -> int:
+    """Tamaño del modelo en memoria (para estimar la RAM). Kokoro carga un modelo común de ~326 MB."""
+    if engine == "kokoro":
+        from app.tts.kokoro import _catalog
+
+        return int(_catalog()["model"]["size_bytes"])
+    return tts.get_engine(engine).voice_info(voice).size_bytes if voice else 63_000_000
 
 
 def _benchmark_if_needed(engine: str, voice: str) -> None:
@@ -272,7 +280,7 @@ def _benchmark_if_needed(engine: str, voice: str) -> None:
     eng = tts.get_engine(engine)
     if eng.problems() or not eng.is_installed(voice):
         return
-    text = SAMPLES[catalog.get_raw(voice)["lang"]][:160]
+    text = SAMPLES[eng.voice_info(voice).lang][:160]
     eng.synthesize(text, voice)  # calentamiento: carga el modelo
     t0 = time.monotonic()
     audio = eng.synthesize(text, voice)
@@ -285,7 +293,7 @@ def estimate(job_id: str) -> dict[str, Any]:
     plan = runner.plan(j)
     sizes = [pc.chars for pc in plan]
     voice = j["settings"]["voice"]
-    voice_size = catalog.get_raw(voice)["size_bytes"] if voice else 63_000_000
+    voice_size = _model_bytes(j["settings"]["engine"], voice)
     _benchmark_if_needed(j["settings"]["engine"], voice)
     e = est.estimate(sum(sizes), max(sizes, default=0), speed=float(j["settings"]["speed"]), voice_id=voice,
                      voice_size_bytes=voice_size)

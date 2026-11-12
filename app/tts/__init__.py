@@ -15,7 +15,13 @@ def _piper() -> TTSEngine:
     return PiperEngine()
 
 
-_FACTORIES: dict[str, Callable[[], TTSEngine]] = {"piper": _piper}
+def _kokoro() -> TTSEngine:
+    from app.tts.kokoro import KokoroEngine
+
+    return KokoroEngine()
+
+
+_FACTORIES: dict[str, Callable[[], TTSEngine]] = {"piper": _piper, "kokoro": _kokoro}
 _INSTANCES: dict[str, TTSEngine] = {}
 
 

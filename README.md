@@ -5,7 +5,7 @@
 
 > ⚠️ **Aviso legal / Legal notice.** Debes tener los derechos del libro que conviertes. La herramienta no incluye ni distribuye libros con copyright. / You must have the rights to any book you convert. This tool does not include or distribute copyrighted books.
 
-> 🚧 **Estado: fase 3.** Funciona: EPUB, PDF (con OCR opcional de escaneados), DOCX, TXT y MD; limpieza de cabeceras/pies/notas; voces Piper; diccionario de pronunciación; MP3 por capítulo con ID3/portada y M4B único con marcadores de capítulo; ZIP; estimaciones de tiempo/disco/RAM medidas en tu equipo. Pendiente (ver `docs/DECISIONS.md`): Kokoro, Docker, instaladores y guía visual completa.
+> 🚧 **Estado: fase 4.** Funciona: EPUB, PDF (con OCR opcional de escaneados), DOCX, TXT y MD; limpieza de cabeceras/pies/notas; voces Piper (rápido, por defecto) y Kokoro (opcional, más natural y más lento); diccionario de pronunciación; MP3 por capítulo con ID3/portada y M4B único con marcadores de capítulo; ZIP; estimaciones de tiempo/disco/RAM medidas en tu equipo. Pendiente (ver `docs/DECISIONS.md`): Docker, instaladores y guía visual completa.
 
 ## Probarlo ya (desarrollo)
 
