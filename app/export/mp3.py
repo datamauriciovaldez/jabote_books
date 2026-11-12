@@ -62,50 +62,90 @@ def cover_path(job: dict[str, Any]) -> Path | None:
     return p if p and p.exists() else None
 
 
-def export_mp3(job: dict[str, Any], progress: Callable[[int, int, str], None] | None = None) -> list[Path]:
-    """Genera un MP3 por capítulo incluido. Requiere que todo el audio esté generado."""
+def render_chapter_wavs(job: dict[str, Any], work: Path,
+                        progress: Callable[[str], None] | None = None) -> list[tuple[str, Path]]:
+    """Monta cada capítulo incluido en un WAV (fragmentos + pausas). Es el paso común a MP3 y M4B."""
     gaps = missing_chunks(job)
     if gaps:
         raise UserError("export_incomplete", missing=gaps)
-    plan = build_plan(job)
-    out_dir = export_dir(job["id"])
-    for old in out_dir.glob("*.mp3"):
-        old.unlink()
-    s, b = job["settings"], job["book"]
+    s = job["settings"]
+    out = []
+    for n, pc in enumerate(build_plan(job), 1):
+        if progress:
+            progress(pc.title)
+        wav = work / f"{n:03d}.wav"
+        assemble(pc.chunks, chunk_dir(job["id"], pc.id), wav,
+                 pause_paragraph=float(s["pause_paragraph"]), pause_chapter=float(s["pause_chapter"]))
+        out.append((pc.title, wav))
+    return out
+
+
+def encode_mp3(job: dict[str, Any], n: int, total: int, title: str, wav: Path, out_dir: Path) -> Path:
+    b = job["book"]
     cover = cover_path(job)
-    files: list[Path] = []
+    out = out_dir / f"{n:02d} - {safe_name(title)}.mp3"
+    cmd = ["-i", str(wav)]
+    if cover:
+        cmd += ["-i", str(cover)]
+    cmd += ["-map", "0:a"] + (["-map", "1:v", "-c:v", "copy", "-metadata:s:v", "title=Cover",
+                               "-metadata:s:v", "comment=Cover (front)"] if cover else [])
+    cmd += ["-af", LOUDNORM, "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "64k",
+            "-id3v2_version", "3", "-write_id3v1", "1",
+            *id3_args(title=title, artist=b["author"], album=b["title"], track=n, tracks=total,
+                      comment="AudioLibro Libre"),
+            str(out)]
+    run_ffmpeg(cmd)
+    return out
+
+
+def export_mp3(job: dict[str, Any], progress: Callable[[int, int, str], None] | None = None) -> list[Path]:
+    """Solo MP3 (un archivo por capítulo). `export_all` genera además el M4B."""
+    return export_all(job, ["mp3"], progress)["mp3"]
+
+
+def export_all(job: dict[str, Any], formats: list[str],
+               progress: Callable[[int, int, str], None] | None = None) -> dict[str, Any]:
+    """Genera los formatos pedidos ("mp3", "m4b"). Devuelve {"mp3": [Path…], "m4b": Path | None}."""
+    from app.export.m4b import export_m4b, measure
+
+    if not formats or not set(formats) <= {"mp3", "m4b"}:
+        raise UserError("export_format_none")
+    out_dir = export_dir(job["id"])
+    for old in [*out_dir.glob("*.mp3"), *out_dir.glob("*.m4b"), *out_dir.glob("*.zip")]:
+        old.unlink()
+    n_ch = len([c for c in job["book"]["chapters"] if c["included"]])
+    total = n_ch * (1 + ("mp3" in formats)) + ("m4b" in formats)
+    done = [0]
+
+    def tick(label: str) -> None:
+        if progress:
+            progress(done[0], total, label)
+        done[0] += 1
+
+    result: dict[str, Any] = {"mp3": [], "m4b": None}
     with tempfile.TemporaryDirectory(dir=out_dir) as tmp:
-        for n, pc in enumerate(plan, 1):
-            if progress:
-                progress(n - 1, len(plan), pc.title)
-            wav = Path(tmp) / f"{n}.wav"
-            assemble(pc.chunks, chunk_dir(job["id"], pc.id), wav,
-                     pause_paragraph=float(s["pause_paragraph"]), pause_chapter=float(s["pause_chapter"]))
-            out = out_dir / f"{n:02d} - {safe_name(pc.title)}.mp3"
-            cmd = ["-i", str(wav)]
-            if cover:
-                cmd += ["-i", str(cover)]
-            cmd += ["-map", "0:a"] + (["-map", "1:v", "-c:v", "copy",
-                                       "-metadata:s:v", "title=Cover", "-metadata:s:v", "comment=Cover (front)"]
-                                      if cover else [])
-            cmd += ["-af", LOUDNORM, "-ac", "1", "-ar", "44100", "-c:a", "libmp3lame", "-b:a", "64k",
-                    "-id3v2_version", "3", "-write_id3v1", "1",
-                    *id3_args(title=pc.title, artist=b["author"], album=b["title"], track=n, tracks=len(plan),
-                              comment="AudioLibro Libre"),
-                    str(out)]
-            run_ffmpeg(cmd)
-            files.append(out)
+        work = Path(tmp)
+        wavs = render_chapter_wavs(job, work, tick)
+        if "mp3" in formats:
+            for n, (title, wav) in enumerate(wavs, 1):
+                tick(title)
+                result["mp3"].append(encode_mp3(job, n, len(wavs), title, wav, out_dir))
+        if "m4b" in formats:
+            tick(job["book"]["title"])
+            result["m4b"] = export_m4b(job, [measure(t, w) for t, w in wavs], out_dir, work)
     if progress:
-        progress(len(plan), len(plan), "")
-    return files
+        progress(total, total, "")
+    return result
 
 
-def make_zip(job: dict[str, Any], files: list[Path]) -> Path:
+def make_zip(job: dict[str, Any], files: list[Path], m4b: Path | None = None) -> Path:
     out = export_dir(job["id"]) / f"{safe_name(job['book']['title'])}.zip"
     out.unlink(missing_ok=True)
     with zipfile.ZipFile(out, "w", zipfile.ZIP_STORED) as z:   # los MP3 ya están comprimidos
         for f in files:
             z.write(f, f.name)
+        if m4b is not None:
+            z.write(m4b, m4b.name)
         cover = cover_path(job)
         if cover:
             z.write(cover, f"portada{cover.suffix}")

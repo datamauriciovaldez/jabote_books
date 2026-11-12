@@ -493,6 +493,11 @@ function showExportDone(st) {
   $("#export-status").textContent = "";
   $("#export-result").hidden = false;
   $("#zip-link").href = api.downloadUrl(S.job.id, st.zip);
+  const hasM4b = Boolean(st.m4b);
+  $("#m4b-link").hidden = !hasM4b;
+  $("#m4b-hint").hidden = !hasM4b;
+  if (hasM4b) $("#m4b-link").href = api.downloadUrl(S.job.id, st.m4b);
+  $("#mp3-files-label").hidden = st.files.length === 0;
   const ul = $("#mp3-list");
   ul.replaceChildren(...st.files.map((f) => el("li", {}, el("a", { href: api.downloadUrl(S.job.id, f), text: f }))));
   announce(t("s5.done"));
@@ -582,7 +587,8 @@ function bind() {
   $("#export-start").addEventListener("click", () => guard(async () => {
     showError(null);
     $("#export-result").hidden = true;
-    await api.startExport(S.job.id);
+    const formats = [$("#fmt-m4b").checked && "m4b", $("#fmt-mp3").checked && "mp3"].filter(Boolean);
+    await api.startExport(S.job.id, formats);
     await pollExport();
   }));
   $("#new-book").addEventListener("click", async () => { S.job = null; S.tutorial = false; await goStep(1); });

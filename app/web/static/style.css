@@ -123,6 +123,8 @@ textarea { font-family: Georgia, "Times New Roman", serif; line-height: 1.6; }
 progress { width: 100%; height: 1.2rem; accent-color: var(--primary); margin: 6px 0; }
 .gen-ch { display: grid; grid-template-columns: 2fr 3fr auto auto; gap: 10px; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--border); }
 .gen-ch progress { margin: 0; }
+.formats { border: 0; padding: 0; margin: 0 0 12px; }
+.formats legend { font-weight: 700; margin-bottom: 6px; }
 .cover-row { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; }
 #cover-img { object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
 audio { width: 100%; margin-top: 6px; }

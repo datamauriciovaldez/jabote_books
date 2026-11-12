@@ -46,6 +46,7 @@ def estimate(total_chars: int, longest_chapter_chars: int, *, speed: float, samp
         "generation_seconds": round(secs / rtf),
         "rtf": round(rtf, 1),
         "rtf_measured": _bench_file().exists(),
-        "disk_bytes": int(secs * pcm * FLAC_RATIO + longest * pcm + 2 * secs * MP3_BYTES_PER_SECOND),
+        # fragmentos FLAC + WAV temporal del capítulo más largo + MP3 + M4B + ZIP (que repite MP3 y M4B)
+        "disk_bytes": int(secs * pcm * FLAC_RATIO + longest * pcm + 4 * secs * MP3_BYTES_PER_SECOND),
         "ram_bytes": int(voice_size_bytes * 3 + 400_000_000),
     }

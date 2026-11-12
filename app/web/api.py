@@ -5,6 +5,7 @@ import io
 import shutil
 import tempfile
 import threading
+import time
 from pathlib import Path
 from typing import Any
 
@@ -145,7 +146,9 @@ def voice_sample(voice_id: str, body: SampleIn, engine: str = "piper") -> Respon
         raise UserError(probs[0])
     lang = catalog.get_raw(voice_id)["lang"]
     text = body.text.strip() or SAMPLES[lang]
+    t0 = time.monotonic()
     audio = eng.synthesize(text, voice_id, speed=body.speed, speaker=body.speaker)
+    est.record_rtf(audio.seconds, time.monotonic() - t0)
     n = min(len(audio.samples), int(SAMPLE_SECONDS * audio.sample_rate))
     samples = audio.samples[:n].copy()
     fade = min(n, int(0.25 * audio.sample_rate))
@@ -337,9 +340,16 @@ def get_cover(job_id: str) -> FileResponse:
 
 
 # ------------------------------------------------------------------- exportar
+class ExportIn(BaseModel):
+    formats: list[str] = ["mp3", "m4b"]
+
+
 @router.post("/jobs/{job_id}/export")
-def start_export(job_id: str) -> dict[str, Any]:
-    export_manager.start(job_id)
+def start_export(job_id: str, body: ExportIn | None = None) -> dict[str, Any]:
+    formats = (body or ExportIn()).formats
+    if not formats or not set(formats) <= {"mp3", "m4b"}:
+        raise UserError("export_format_none")
+    export_manager.start(job_id, formats)
     return export_manager.status(job_id)
 
 

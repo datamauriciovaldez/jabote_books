@@ -48,7 +48,7 @@ export const api = {
   preview: (id, ch) => request("GET", `api/jobs/${q(id)}/chapters/${ch}/preview`),
   setCover: (id, file) => { const f = new FormData(); f.append("file", file); return request("POST", `api/jobs/${q(id)}/cover`, f); },
   coverUrl: (id) => `api/jobs/${q(id)}/cover?t=${Date.now()}`,
-  startExport: (id) => request("POST", `api/jobs/${q(id)}/export`),
+  startExport: (id, formats) => request("POST", `api/jobs/${q(id)}/export`, { formats }),
   exportStatus: (id) => request("GET", `api/jobs/${q(id)}/export`),
   downloadUrl: (id, name) => `api/jobs/${q(id)}/download/${q(name)}`,
 };

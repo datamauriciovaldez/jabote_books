@@ -275,16 +275,24 @@
       </div>
 
       <div class="card">
+        <fieldset class="formats">
+          <legend data-i18n="s5.formats"></legend>
+          <label class="check"><input type="checkbox" id="fmt-m4b" checked> <span data-i18n="s5.fmt_m4b"></span></label>
+          <label class="check"><input type="checkbox" id="fmt-mp3" checked> <span data-i18n="s5.fmt_mp3"></span></label>
+        </fieldset>
         <button type="button" class="btn primary" id="export-start" data-i18n="s5.export"></button>
         <progress id="export-bar" max="100" value="0" hidden aria-label="Export"></progress>
         <p id="export-status" class="status" role="status"></p>
         <div id="export-result" hidden>
           <p class="big" data-i18n="s5.done"></p>
-          <a id="zip-link" class="btn primary" href="#" data-i18n="s5.zip"></a>
-          <p data-i18n="s5.files"></p>
+          <div class="row">
+            <a id="m4b-link" class="btn primary" href="#" data-i18n="s5.m4b_link" hidden></a>
+            <a id="zip-link" class="btn secondary" href="#" data-i18n="s5.zip"></a>
+          </div>
+          <p id="m4b-hint" class="hint" data-i18n="s5.m4b_hint" hidden></p>
+          <p id="mp3-files-label" data-i18n="s5.files"></p>
           <ul id="mp3-list" class="plain"></ul>
           <p class="hint" data-i18n="s5.credits"></p>
-          <p class="hint" data-i18n="s5.m4b"></p>
         </div>
       </div>
 

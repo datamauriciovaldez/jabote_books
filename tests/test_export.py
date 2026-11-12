@@ -66,3 +66,83 @@ def test_export_refuses_incomplete(finished_job):
     with pytest.raises(UserError) as e:
         export_mp3(load_job(finished_job))
     assert e.value.code == "export_incomplete"
+
+
+def probe_full(path):
+    out = subprocess.run(["ffprobe", "-v", "error", "-show_format", "-show_streams", "-show_chapters",
+                          "-of", "json", str(path)], capture_output=True, text=True, check=True).stdout
+    return json.loads(out)
+
+
+def add_cover(job_id):
+    from PIL import Image
+
+    from app.jobs.store import job_path
+    Image.new("RGB", (300, 400), (30, 90, 200)).save(job_path(job_id) / "cover.jpg")
+    update_job(job_id, lambda j: j["book"].update(cover="cover.jpg"))
+
+
+def test_m4b_has_chapter_markers_cover_and_metadata(finished_job):
+    from app.export.mp3 import export_all
+    from app.jobs.store import load_job
+    add_cover(finished_job)
+    job = load_job(finished_job)
+    res = export_all(job, ["m4b"])
+    assert res["mp3"] == [] and res["m4b"].suffix == ".m4b"
+    info = probe_full(res["m4b"])
+    assert [c["tags"]["title"] for c in info["chapters"]] == ["Capítulo 1", "Capítulo 2"]
+    marks = [(float(c["start_time"]), float(c["end_time"])) for c in info["chapters"]]
+    assert marks[0][0] == 0 and abs(marks[0][1] - marks[1][0]) < 0.01          # capítulos contiguos
+    assert abs(marks[-1][1] - float(info["format"]["duration"])) < 0.5         # el último llega al final
+    tags = {k.lower(): v for k, v in info["format"]["tags"].items()}
+    assert tags["title"] == "Libro" and tags["artist"] == "Ana Autora" and tags["genre"] == "Audiobook"
+    kinds = {s["codec_type"]: s for s in info["streams"]}
+    assert kinds["audio"]["codec_name"] == "aac" and kinds["video"]["disposition"]["attached_pic"] == 1
+
+
+def test_m4b_chapter_times_match_audio_lengths(finished_job):
+    """Los marcadores salen de las muestras exactas: el capítulo 2 empieza donde acaba el audio del 1."""
+    import soundfile as sf
+
+    from app.export.m4b import chapter_marks, measure
+    from app.export.mp3 import export_all
+    from app.jobs.store import load_job
+    export_all(load_job(finished_job), ["mp3"])
+    job = load_job(finished_job)
+    import pathlib
+    import tempfile
+
+    from app.export.mp3 import render_chapter_wavs
+    with tempfile.TemporaryDirectory() as tmp:
+        wavs = render_chapter_wavs(job, pathlib.Path(tmp))
+        chs = [measure(t, w) for t, w in wavs]
+        marks = chapter_marks(chs)
+        assert marks[1][0] == marks[0][1]
+        assert abs(marks[0][1] / 1000 - sf.info(str(wavs[0][1])).duration) < 0.002
+
+
+def test_all_formats_zip_contains_both(finished_job):
+    from app.export.mp3 import export_all, make_zip
+    from app.jobs.store import load_job
+    job = load_job(finished_job)
+    res = export_all(job, ["mp3", "m4b"])
+    z = make_zip(job, res["mp3"], res["m4b"])
+    names = zipfile.ZipFile(z).namelist()
+    assert len([n for n in names if n.endswith(".mp3")]) == 2 and any(n.endswith(".m4b") for n in names)
+
+
+def test_no_format_selected_is_an_error(finished_job):
+    from app.export.mp3 import export_all
+    from app.jobs.store import load_job
+    with pytest.raises(UserError) as e:
+        export_all(load_job(finished_job), [])
+    assert e.value.code == "export_format_none"
+
+
+def test_ffmetadata_escapes_special_characters():
+    from pathlib import Path
+
+    from app.export.m4b import ChapterAudio, ffmetadata
+    job = {"book": {"title": "A=B; C#D", "author": "X"}}
+    out = ffmetadata(job, [ChapterAudio("Uno=1;\\2", Path("a.wav"), 22050, 22050)])
+    assert "title=A\\=B\\; C\\#D" in out and "title=Uno\\=1\\;\\\\2" in out and "END=1000" in out
