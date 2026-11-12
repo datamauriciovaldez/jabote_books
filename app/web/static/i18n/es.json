@@ -24,19 +24,16 @@
   "common.min": "min",
   "common.h": "h",
   "common.ok": "Hecho",
-
   "legal.title": "Aviso legal importante",
   "legal.text": "Debes tener los derechos del libro que conviertes (es tuyo, es de dominio público o tienes permiso de su titular). Esta herramienta no incluye ni distribuye libros con copyright.",
   "legal.accept": "Confirmo que tengo derecho a convertir los libros que voy a usar.",
   "legal.footer": "Recuerda: usa solo libros sobre los que tengas derechos. AudioLibro Libre no incluye ni distribuye libros con copyright. Todo se procesa en tu ordenador.",
-
   "sys.title": "Falta algo en tu ordenador",
   "sys.ffmpeg_missing": "No se encuentra ffmpeg (hace falta para crear los MP3).",
   "sys.espeak_missing": "No se encuentra espeak-ng (hace falta para pronunciar bien el texto).",
   "sys.how": "Cómo instalarlo: con Docker ya viene incluido. En Windows, vuelve a ejecutar install.bat. En Mac: brew install ffmpeg espeak-ng. En Linux: sudo apt install ffmpeg espeak-ng. Después, recarga esta página.",
-
   "s1.title": "1. Sube tu libro",
-  "s1.explain": "Elige el archivo del libro. La aplicación lo abre en tu ordenador, extrae el texto y detecta los capítulos. Nada sale de tu equipo. Si el libro es un PDF escaneado (fotos de páginas), necesitará un paso extra de reconocimiento de texto que llegará en una próxima versión.",
+  "s1.explain": "Elige el archivo del libro (EPUB, PDF, Word, TXT o Markdown). La aplicación lo abre en tu ordenador, extrae el texto, quita números de página, cabeceras y notas al pie, y detecta los capítulos. Nada sale de tu equipo. Si el PDF es escaneado (fotos de páginas), se reconoce el texto con OCR, lo que tarda más.",
   "s1.formats": "Formatos admitidos ahora: {formats}",
   "s1.choose": "Elegir archivo del libro",
   "s1.drop": "o arrastra aquí el archivo",
@@ -60,7 +57,6 @@
   "s1.status.done": "Terminado",
   "s1.status.error": "Con error",
   "s1.chapters_n": "{n} capítulos",
-
   "s2.title": "2. Revisa el texto",
   "s2.explain": "Esto es lo que se va a leer en voz alta. Ya se han quitado números de página, notas al pie y guiones de fin de línea, y se han detectado los capítulos. Revisa los títulos, corrige el texto si hace falta y desmarca lo que no quieras escuchar (índice, agradecimientos…).",
   "s2.book_title": "Título del libro",
@@ -80,7 +76,6 @@
   "s2.new_chapter_text": "Escribe aquí el texto del capítulo.",
   "s2.selected": "Capítulo seleccionado",
   "s2.summary": "{n} de {total} capítulos incluidos",
-
   "s3.title": "3. Elige la voz y los ajustes",
   "s3.explain": "Aquí decides cómo sonará el libro. Las voces se descargan una sola vez (unos 60 MB) y después funcionan sin internet. Pulsa «Escuchar muestra» para oír 10 segundos antes de procesar el libro entero.",
   "s3.language": "Idioma de las voces",
@@ -127,7 +122,6 @@
   "s3.disk_warn": "Puede que no haya espacio suficiente en el disco. Libera espacio antes de empezar.",
   "s3.ram_warn": "Tu equipo tiene poca memoria. Cierra otros programas antes de empezar.",
   "s3.saving": "Guardando ajustes…",
-
   "s4.title": "4. Generar el audio",
   "s4.explain": "El texto se divide en fragmentos pequeños y se convierte en voz uno a uno. Cada fragmento se guarda en el disco al terminar: si pausas, cancelas o se apaga el ordenador, no pierdes nada y puedes continuar donde lo dejaste.",
   "s4.start": "Empezar a generar",
@@ -150,7 +144,6 @@
   "s4.listen_none": "Aún no hay audio en este capítulo.",
   "s4.preview": "Vista previa (primeros segundos de «{title}»)",
   "s4.safe": "Puedes cerrar esta pestaña: la generación sigue mientras la aplicación esté abierta. Si la cierras, al volver pulsa «Reanudar».",
-
   "s5.title": "5. Exporta tu audiolibro",
   "s5.explain": "Se crea un archivo MP3 por capítulo, con título, autor y portada, y con el volumen igualado entre capítulos. Todo se junta en un ZIP para descargar.",
   "s5.cover": "Portada (opcional)",
@@ -167,7 +160,6 @@
   "s5.incomplete": "Falta audio por generar. Vuelve al paso 4 y termina la generación.",
   "s5.new": "Convertir otro libro",
   "s5.m4b": "El formato M4B (un único archivo con marcadores de capítulo) llegará en una próxima versión.",
-
   "tutorial.title": "Tutorial de 2 minutos",
   "tutorial.intro": "Vamos a convertir un fragmento de Don Quijote (dominio público) en audiolibro. Solo tienes que seguir estos pasos:",
   "tutorial.s1": "Se carga el libro de ejemplo y se detectan sus capítulos.",
@@ -176,11 +168,10 @@
   "tutorial.s4": "Pulsas «Empezar a generar» y esperas un par de minutos.",
   "tutorial.s5": "Exportas y descargas el ZIP con los MP3.",
   "tutorial.go": "Empezar el tutorial",
-
   "errors.unsupported_format.msg": "Este tipo de archivo ({ext}) todavía no se puede abrir.",
   "errors.unsupported_format.hint": "Prueba con uno de estos formatos: {supported}.",
   "errors.empty_book.msg": "No se ha encontrado texto en el libro.",
-  "errors.empty_book.hint": "Comprueba que el archivo no está vacío. Si es un PDF escaneado (solo imágenes), necesita OCR, que llegará en una próxima versión.",
+  "errors.empty_book.hint": "Comprueba que el archivo no está vacío. Si es un PDF escaneado y falla, mira si Tesseract (OCR) está instalado.",
   "errors.epub_invalid.msg": "Este EPUB está dañado o no es un EPUB válido.",
   "errors.epub_invalid.hint": "Prueba a descargarlo de nuevo, o conviértelo a TXT con un programa como Calibre.",
   "errors.epub_drm.msg": "Este EPUB está protegido con DRM y no se puede leer.",
@@ -244,5 +235,21 @@
   "errors.unexpected.msg": "Ha ocurrido un error inesperado.",
   "errors.unexpected.hint": "Pulsa «Reanudar» para continuar sin perder lo hecho. Si se repite, mira docs/TROUBLESHOOTING.md. Detalle técnico: {detail}",
   "errors.network.msg": "No se puede hablar con la aplicación.",
-  "errors.network.hint": "Comprueba que la ventana de AudioLibro Libre (o Docker) sigue abierta y recarga la página."
+  "errors.network.hint": "Comprueba que la ventana de AudioLibro Libre (o Docker) sigue abierta y recarga la página.",
+  "errors.pdf_encrypted.msg": "Este PDF está protegido con contraseña.",
+  "errors.pdf_encrypted.hint": "Quita la contraseña con tu lector de PDF (imprimir a PDF sin protección) y súbelo de nuevo. Usa solo libros sobre los que tengas derechos.",
+  "errors.pdf_invalid.msg": "No se puede leer este PDF: está dañado o no es un PDF válido.",
+  "errors.pdf_invalid.hint": "Prueba a descargarlo de nuevo o a guardarlo otra vez como PDF desde tu lector.",
+  "errors.docx_invalid.msg": "No se puede leer este documento de Word.",
+  "errors.docx_invalid.hint": "Ábrelo en Word o LibreOffice y guárdalo de nuevo como .docx (no .doc).",
+  "errors.ocr_missing.msg": "Este PDF parece escaneado (son fotos de páginas) y falta Tesseract, el programa que reconoce el texto.",
+  "errors.ocr_missing.hint": "Con Docker ya viene incluido. En Windows: instala Tesseract desde https://github.com/UB-Mannheim/tesseract/wiki marcando el idioma español, y reinicia la aplicación. En Mac: brew install tesseract tesseract-lang. En Linux: sudo apt install tesseract-ocr tesseract-ocr-spa. Después vuelve a subir el PDF.",
+  "errors.ocr_lang_missing.msg": "Tesseract está instalado pero le falta el idioma «{lang}».",
+  "errors.ocr_lang_missing.hint": "Instala el paquete de idioma: en Linux sudo apt install tesseract-ocr-spa (o tesseract-ocr-eng); en Mac brew install tesseract-lang; en Windows vuelve a ejecutar el instalador de Tesseract y marca el idioma.",
+  "errors.ocr_failed.msg": "El reconocimiento de texto (OCR) ha fallado.",
+  "errors.ocr_failed.hint": "Prueba con un PDF de mejor calidad o conviértelo a texto con otro programa. Detalle técnico: {detail}",
+  "s1.reading_pdf": "Leyendo la página {done} de {total}…",
+  "s1.ocr_progress": "Reconociendo texto (OCR): página {done} de {total}. Un libro escaneado puede tardar varios minutos; no cierres esta pestaña.",
+  "s1.ocr_note": "PDF escaneado: para reconocer el texto hace falta Tesseract, que no está instalado. Solo lo necesitas para PDFs que son fotos de páginas; con el resto funciona todo.",
+  "s1.ocr_how": "Cómo instalarlo: con Docker ya viene incluido. Windows: instala Tesseract (UB-Mannheim) con el idioma español. Mac: brew install tesseract tesseract-lang. Linux: sudo apt install tesseract-ocr tesseract-ocr-spa."
 }

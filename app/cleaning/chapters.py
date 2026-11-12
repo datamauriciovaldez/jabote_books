@@ -64,6 +64,12 @@ def strip_gutenberg(text: str) -> str:
     return text
 
 
+def is_heading_line(line: str) -> bool:
+    """¿Esta línea suelta parece un encabezado de capítulo ("Capítulo 3", "Prólogo"…)?"""
+    line = line.strip()
+    return len(line) <= 110 and bool(_NUMBERED.match(line) or _STANDALONE.match(line))
+
+
 def is_skippable_title(title: str) -> bool:
     return bool(SKIP_TITLES.match(title.strip()))
 

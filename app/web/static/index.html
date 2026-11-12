@@ -73,11 +73,15 @@
         </div>
         <div class="drop" id="drop">
           <label for="file" class="btn primary" data-i18n="s1.choose"></label>
-          <input type="file" id="file" accept=".txt,.epub" class="file-input">
+          <input type="file" id="file" accept=".txt,.epub,.pdf,.docx,.md" class="file-input">
           <span class="muted" data-i18n="s1.drop"></span>
         </div>
         <p class="hint" id="formats"></p>
         <p id="upload-status" class="status" role="status"></p>
+        <div id="ocr-note" class="notice warn" hidden>
+          <p data-i18n="s1.ocr_note"></p>
+          <p class="hint" data-i18n="s1.ocr_how"></p>
+        </div>
       </div>
 
       <div class="card">

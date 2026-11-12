@@ -124,6 +124,9 @@ function applyLegalGate() {
 
 async function enterStep1() {
   $("#formats").textContent = t("s1.formats", { formats: (S.system?.supported_formats || [".txt", ".epub"]).join(" ") });
+  $("#file").accept = (S.system?.supported_formats || [".txt", ".epub"]).join(",");
+  const ocr = $("#ocr-note");
+  ocr.hidden = !S.system || S.system.tesseract;
   $("#book-lang").value = currentLang();
   applyLegalGate();
   const list = await api.jobs();
@@ -148,10 +151,17 @@ async function handleFile(file) {
   if (!legalOk()) return;
   showError(null);
   $("#upload-status").textContent = t("s1.reading");
+  const token = Math.random().toString(36).slice(2, 12);
+  const timer = setInterval(async () => {
+    try {
+      const p = await api.uploadProgress(token);
+      if (p.total > 0) $("#upload-status").textContent = t(p.stage === "ocr" ? "s1.ocr_progress" : "s1.reading_pdf", { done: p.done, total: p.total });
+    } catch { /* el progreso es solo informativo */ }
+  }, 1000);
   try {
-    const job = await api.upload(file, $("#book-lang").value);
+    const job = await api.upload(file, $("#book-lang").value, token);
     await openJob(job, 2);
-  } catch (e) { showError(e); } finally { $("#upload-status").textContent = ""; $("#file").value = ""; }
+  } catch (e) { showError(e); } finally { clearInterval(timer); $("#upload-status").textContent = ""; $("#file").value = ""; }
 }
 
 async function startDemo(lang) {

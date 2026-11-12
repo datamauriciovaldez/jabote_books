@@ -24,19 +24,16 @@
   "common.min": "min",
   "common.h": "h",
   "common.ok": "Done",
-
   "legal.title": "Important legal notice",
   "legal.text": "You must have the rights to the book you convert (it is yours, it is in the public domain, or you have its owner's permission). This tool does not include or distribute copyrighted books.",
   "legal.accept": "I confirm I have the right to convert the books I will use.",
   "legal.footer": "Remember: only use books you have rights to. AudioLibro Libre does not include or distribute copyrighted books. Everything is processed on your computer.",
-
   "sys.title": "Something is missing on your computer",
   "sys.ffmpeg_missing": "ffmpeg was not found (needed to create the MP3 files).",
   "sys.espeak_missing": "espeak-ng was not found (needed to pronounce the text correctly).",
   "sys.how": "How to install it: with Docker it is already included. On Windows, run install.bat again. On Mac: brew install ffmpeg espeak-ng. On Linux: sudo apt install ffmpeg espeak-ng. Then reload this page.",
-
   "s1.title": "1. Upload your book",
-  "s1.explain": "Choose the book file. The app opens it on your computer, extracts the text and detects the chapters. Nothing leaves your machine. If the book is a scanned PDF (page photos) it will need an extra text-recognition step that will arrive in a future version.",
+  "s1.explain": "Choose the book file (EPUB, PDF, Word, TXT or Markdown). The app opens it on your computer, extracts the text, removes page numbers, headers and footnotes, and detects the chapters. Nothing leaves your machine. If the PDF is scanned (page photos) its text is recognised with OCR, which takes longer.",
   "s1.formats": "Formats supported now: {formats}",
   "s1.choose": "Choose book file",
   "s1.drop": "or drag the file here",
@@ -60,7 +57,6 @@
   "s1.status.done": "Finished",
   "s1.status.error": "Has an error",
   "s1.chapters_n": "{n} chapters",
-
   "s2.title": "2. Review the text",
   "s2.explain": "This is what will be read aloud. Page numbers, footnotes and end-of-line hyphens have already been removed and chapters detected. Check the titles, fix the text if needed and untick anything you do not want to hear (index, acknowledgements…).",
   "s2.book_title": "Book title",
@@ -80,7 +76,6 @@
   "s2.new_chapter_text": "Write the chapter text here.",
   "s2.selected": "Selected chapter",
   "s2.summary": "{n} of {total} chapters included",
-
   "s3.title": "3. Choose the voice and settings",
   "s3.explain": "Here you decide how the book will sound. Voices are downloaded once (about 60 MB) and then work offline. Press “Listen to sample” to hear 10 seconds before processing the whole book.",
   "s3.language": "Voice language",
@@ -127,7 +122,6 @@
   "s3.disk_warn": "There may not be enough disk space. Free some space before starting.",
   "s3.ram_warn": "Your computer has little memory. Close other programs before starting.",
   "s3.saving": "Saving settings…",
-
   "s4.title": "4. Generate the audio",
   "s4.explain": "The text is split into small pieces and turned into speech one by one. Each piece is saved to disk as soon as it is done: if you pause, cancel or the computer shuts down you lose nothing and can continue where you left off.",
   "s4.start": "Start generating",
@@ -150,7 +144,6 @@
   "s4.listen_none": "No audio in this chapter yet.",
   "s4.preview": "Preview (first seconds of “{title}”)",
   "s4.safe": "You can close this tab: generation keeps going while the app is open. If you close the app, press “Resume” when you come back.",
-
   "s5.title": "5. Export your audiobook",
   "s5.explain": "One MP3 file per chapter is created, with title, author and cover, and with volume levelled across chapters. Everything is bundled in a ZIP to download.",
   "s5.cover": "Cover (optional)",
@@ -167,7 +160,6 @@
   "s5.incomplete": "Some audio is still missing. Go back to step 4 and finish generating.",
   "s5.new": "Convert another book",
   "s5.m4b": "The M4B format (a single file with chapter markers) will arrive in a future version.",
-
   "tutorial.title": "2-minute tutorial",
   "tutorial.intro": "We will turn an excerpt of Don Quixote (public domain) into an audiobook. Just follow these steps:",
   "tutorial.s1": "The sample book loads and its chapters are detected.",
@@ -176,11 +168,10 @@
   "tutorial.s4": "You press “Start generating” and wait a couple of minutes.",
   "tutorial.s5": "You export and download the ZIP with the MP3 files.",
   "tutorial.go": "Start the tutorial",
-
   "errors.unsupported_format.msg": "This file type ({ext}) cannot be opened yet.",
   "errors.unsupported_format.hint": "Try one of these formats: {supported}.",
   "errors.empty_book.msg": "No text was found in the book.",
-  "errors.empty_book.hint": "Check that the file is not empty. If it is a scanned PDF (images only) it needs OCR, which will arrive in a future version.",
+  "errors.empty_book.hint": "Check that the file is not empty. If it is a scanned PDF and it fails, check that Tesseract (OCR) is installed.",
   "errors.epub_invalid.msg": "This EPUB is damaged or is not a valid EPUB.",
   "errors.epub_invalid.hint": "Try downloading it again, or convert it to TXT with a program such as Calibre.",
   "errors.epub_drm.msg": "This EPUB is DRM-protected and cannot be read.",
@@ -244,5 +235,21 @@
   "errors.unexpected.msg": "An unexpected error occurred.",
   "errors.unexpected.hint": "Press “Resume” to continue without losing what is done. If it repeats, see docs/TROUBLESHOOTING.md. Technical detail: {detail}",
   "errors.network.msg": "Cannot talk to the app.",
-  "errors.network.hint": "Check that the AudioLibro Libre window (or Docker) is still open and reload the page."
+  "errors.network.hint": "Check that the AudioLibro Libre window (or Docker) is still open and reload the page.",
+  "errors.pdf_encrypted.msg": "This PDF is password-protected.",
+  "errors.pdf_encrypted.hint": "Remove the password with your PDF reader (print to an unprotected PDF) and upload it again. Only use books you have rights to.",
+  "errors.pdf_invalid.msg": "This PDF cannot be read: it is damaged or not a valid PDF.",
+  "errors.pdf_invalid.hint": "Try downloading it again or saving it as PDF once more from your reader.",
+  "errors.docx_invalid.msg": "This Word document cannot be read.",
+  "errors.docx_invalid.hint": "Open it in Word or LibreOffice and save it again as .docx (not .doc).",
+  "errors.ocr_missing.msg": "This PDF looks scanned (page photos) and Tesseract, the program that recognises text, is missing.",
+  "errors.ocr_missing.hint": "With Docker it is already included. On Windows: install Tesseract from https://github.com/UB-Mannheim/tesseract/wiki ticking the language you need, then restart the app. On Mac: brew install tesseract tesseract-lang. On Linux: sudo apt install tesseract-ocr tesseract-ocr-eng. Then upload the PDF again.",
+  "errors.ocr_lang_missing.msg": "Tesseract is installed but the language “{lang}” is missing.",
+  "errors.ocr_lang_missing.hint": "Install the language pack: on Linux sudo apt install tesseract-ocr-eng (or tesseract-ocr-spa); on Mac brew install tesseract-lang; on Windows run the Tesseract installer again and tick the language.",
+  "errors.ocr_failed.msg": "Text recognition (OCR) failed.",
+  "errors.ocr_failed.hint": "Try a better-quality PDF or convert it to text with another program. Technical detail: {detail}",
+  "s1.reading_pdf": "Reading page {done} of {total}…",
+  "s1.ocr_progress": "Recognising text (OCR): page {done} of {total}. A scanned book can take several minutes; do not close this tab.",
+  "s1.ocr_note": "Scanned PDF: recognising its text needs Tesseract, which is not installed. You only need it for PDFs that are page photos; everything else works.",
+  "s1.ocr_how": "How to install it: with Docker it is already included. Windows: install Tesseract (UB-Mannheim) with the language you need. Mac: brew install tesseract tesseract-lang. Linux: sudo apt install tesseract-ocr tesseract-ocr-eng."
 }

@@ -17,6 +17,11 @@ Verificado contra PyPI y Hugging Face el 2026-11-12 (detalle y descartes en `doc
 | soundfile | BSD-3-Clause | Lectura/escritura de audio (libsndfile es LGPL, enlace dinámico) |
 | lxml | BSD-3-Clause | EPUB |
 | beautifulsoup4 | MIT | Utilidades de HTML |
+| pypdf | BSD-3-Clause | PDF con texto |
+| pypdfium2 | BSD-3-Clause / Apache-2.0 (incluye PDFium, BSD-3) | Renderizar páginas para OCR |
+| python-docx | MIT | Word (.docx) |
+| pytesseract | Apache-2.0 | Puente hacia Tesseract |
+| Pillow | MIT-CMU (HPND, permisiva) | Imágenes para OCR |
 | pytest, ruff (desarrollo) | MIT | Pruebas y estilo |
 
 **Descartadas a propósito:** `ebooklib` (AGPL-3.0), `pymupdf` (AGPL-3.0), `mutagen` (GPL-2.0+),
@@ -28,7 +33,7 @@ Verificado contra PyPI y Hugging Face el 2026-11-12 (detalle y descartes en `doc
 |---|---|---|---|
 | ffmpeg | LGPL-2.1+ / GPL según la compilación | MP3, normalización, metadatos | Programa separado; no se enlaza ni se redistribuye aquí |
 | **espeak-ng** | **GPL-3.0** | Convertir texto en fonemas | **Única excepción al criterio "permisivo".** Se ejecuta como proceso aparte, sin enlazar. El audio generado no queda sujeto a la GPL. Sustituible mediante la interfaz `TTSEngine` |
-| Tesseract (opcional, Fase 2) | Apache-2.0 | OCR | |
+| Tesseract (opcional) | Apache-2.0 | OCR de PDFs escaneados | Si falta, la app avisa con instrucciones |
 
 ## Motor Piper
 

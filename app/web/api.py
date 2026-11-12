@@ -19,6 +19,7 @@ from app.errors import NotFound, UserError
 from app.export import manager as export_manager
 from app.export.mp3 import export_dir, safe_name
 from app.extractors.base import SUPPORTED, extract
+from app.extractors.ocr import installed_languages
 from app.jobs import estimate as est
 from app.jobs.audio_io import assemble
 from app.jobs.runner import runner
@@ -92,6 +93,7 @@ def system() -> dict[str, Any]:
     info = system_info()
     info["engines"] = {e: tts.get_engine(e).problems() for e in tts.available_engines()}
     info["supported_formats"] = list(SUPPORTED)
+    info["ocr_languages"] = sorted(installed_languages() & {"spa", "eng"})
     return info
 
 
@@ -161,8 +163,17 @@ def _public(job: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
+_uploads: dict[str, dict[str, Any]] = {}
+
+
+@router.get("/uploads/{token}")
+def upload_progress(token: str) -> dict[str, Any]:
+    """Progreso de lectura/OCR de una subida en curso (la interfaz lo consulta mientras espera)."""
+    return _uploads.get(token, {"stage": "", "done": 0, "total": 0})
+
+
 @router.post("/jobs")
-def upload(file: UploadFile = File(...), language: str = Form("")) -> dict[str, Any]:
+def upload(file: UploadFile = File(...), language: str = Form(""), token: str = Form("")) -> dict[str, Any]:
     name = Path(file.filename or "libro").name
     ext = Path(name).suffix.lower()
     if ext not in SUPPORTED:
@@ -176,7 +187,16 @@ def upload(file: UploadFile = File(...), language: str = Form("")) -> dict[str, 
                 if size > MAX_UPLOAD:
                     raise UserError("file_too_big", max_mb=MAX_UPLOAD // (1024 * 1024))
                 fh.write(block)
-        book = extract(dest)
+        lang = language if language in ("es", "en") else "es"
+
+        def progress(stage: str, done: int, total: int) -> None:
+            if token:
+                _uploads[token] = {"stage": stage, "done": done, "total": total}
+
+        try:
+            book = extract(dest, lang, progress)
+        finally:
+            _uploads.pop(token, None)
         if book.title in ("upload", ""):
             book.title = Path(name).stem
     return _public(create_job(book, name, language if language in ("es", "en") else ""))
