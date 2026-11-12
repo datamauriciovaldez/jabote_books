@@ -120,3 +120,13 @@ def test_real_lame_tarball_hash_matches_if_downloaded():
     except (urllib.error.URLError, OSError):
         pytest.skip("sin red")
     assert hashlib.sha256(data).hexdigest() == "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e"
+
+
+def test_scripts_never_pipe_into_grep_q():
+    """Regresión: `cmd | grep -q` con `set -o pipefail` falla al azar (SIGPIPE, código 141) y, en la comprobación
+    "no debe ser GPL", daba un falso negativo. Hay que guardar la salida y comprobarla con `case`."""
+    for name in SCRIPTS + ["rehearse_linux.sh"]:
+        for n, line in enumerate((MAC / name).read_text(encoding="utf-8").splitlines(), 1):
+            if line.lstrip().startswith("#"):
+                continue
+            assert not re.search(r"\|\s*grep\s+(-[a-zA-Z]*q|--quiet)", line), f"{name}:{n}: {line.strip()}"

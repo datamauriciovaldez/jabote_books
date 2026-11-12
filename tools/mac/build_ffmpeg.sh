@@ -38,8 +38,15 @@ cp "$SRCDIR/COPYING.LGPLv2.1" "$PREFIX/licenses/FFMPEG-COPYING.LGPLv2.1.txt"
 echo "$CONFIG_FLAGS" > "$PREFIX/licenses/ffmpeg-configure-flags.txt"
 
 # ---- comprobaciones: autónomo, LGPL y con lo que necesita la app
-assert_self_contained "$PREFIX/bin/ffmpeg"
-"$PREFIX/bin/ffmpeg" -hide_banner -version | grep -q -- "--enable-gpl" && fail "El ffmpeg compilado es GPL (no debería)."
-for e in libmp3lame aac flac; do "$PREFIX/bin/ffmpeg" -hide_banner -encoders | grep -q " $e " || fail "Falta el codificador $e"; done
-"$PREFIX/bin/ffmpeg" -hide_banner -filters | grep -q loudnorm || fail "Falta el filtro loudnorm"
-say "ffmpeg listo: $PREFIX/bin/ffmpeg ($("$PREFIX/bin/ffmpeg" -hide_banner -version | head -1))"
+# (se guarda la salida y se comprueba con `case`: `ffmpeg | grep -q` falla al azar por SIGPIPE con `set -o pipefail`)
+FF="$PREFIX/bin/ffmpeg"
+assert_self_contained "$FF"
+VERSION_OUT="$("$FF" -hide_banner -version 2>&1)"
+case "$VERSION_OUT" in *--enable-gpl*) fail "El ffmpeg compilado es GPL (no debería)." ;; esac
+ENCODERS="$("$FF" -hide_banner -encoders 2>&1)"
+for e in libmp3lame aac flac; do
+    case "$ENCODERS" in *" $e "*) ;; *) fail "Falta el codificador $e" ;; esac
+done
+FILTERS="$("$FF" -hide_banner -filters 2>&1)"
+case "$FILTERS" in *loudnorm*) ;; *) fail "Falta el filtro loudnorm" ;; esac
+say "ffmpeg listo: $FF ($(echo "$VERSION_OUT" | head -1))"
