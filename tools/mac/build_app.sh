@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 # Construye AudioLibro Libre.app (Apple Silicon), la firma "ad hoc" (gratis) y crea el .dmg.
 #
-#   Primera vez:  AUDIOLIBRO_TRUST_NEW_SOURCES=1 ./tools/mac/build_app.sh
-#   Después:      ./tools/mac/build_app.sh
+#   ./tools/mac/build_app.sh
 #
 # Requisitos: macOS en Apple Silicon, Herramientas de Xcode (xcode-select --install) y Homebrew (https://brew.sh).
 # Resultado: dist/mac/AudioLibroLibre-<versión>-arm64.dmg  (+ dist/mac/sources/ con el código de ffmpeg/LAME/espeak-ng)
@@ -15,7 +14,9 @@ DIST="$ROOT/dist/mac"; mkdir -p "$DIST"
 # ---- 1) Herramientas
 command -v xcode-select >/dev/null && xcode-select -p >/dev/null 2>&1 || fail "Faltan las herramientas de Xcode. Ejecuta:  xcode-select --install"
 command -v brew >/dev/null || fail "Falta Homebrew (https://brew.sh). Es necesario para compilar espeak-ng."
-for t in autoconf automake libtool pkg-config; do command -v "$t" >/dev/null || { say "Instalando $t con Homebrew"; brew install "$t"; }; done
+for t in autoconf automake pkg-config; do command -v "$t" >/dev/null || { say "Instalando $t con Homebrew"; brew install "$t"; }; done
+# En macOS el comando `libtool` es de Apple (otra herramienta); el de GNU instalado con Homebrew es `glibtoolize`.
+command -v glibtoolize >/dev/null || { say "Instalando libtool (GNU) con Homebrew"; brew install libtool; }
 
 # ---- 2) Python (3.10-3.13, para arm64)
 PY=""

@@ -1,7 +1,13 @@
 # Fuentes que se compilan para la app de macOS: NOMBRE VERSIÓN SHA256 URL
-# SHA256 = UNPINNED significa "todavía no verificado": tools/mac/lib.sh se niega a seguir salvo que se
-# ejecute con AUDIOLIBRO_TRUST_NEW_SOURCES=1; entonces muestra el hash calculado para que lo compares con la
-# web oficial y lo escribas aquí (así las siguientes compilaciones quedan fijadas).
+#
+# ffmpeg y espeak-ng son las MISMAS fuentes que se compilaron y probaron en el ensayo en Linux
+# (tools/mac/rehearse_linux.sh). Sus hashes se comprobaron contra los .dsc firmados de Ubuntu
+# (campo Checksums-Sha256). El de espeak-ng es el tarball "dfsg" de Debian/Ubuntu (código de upstream 1.52.0
+# sin algunos archivos no libres), que es también el código fuente que se publica junto al .dmg.
+#
+# Si Ubuntu retirase estos archivos del archivo (ocurre cuando la versión deja de estar en una release
+# soportada), cambia la URL por la oficial de cada proyecto (ffmpeg.org/releases, GitHub de espeak-ng),
+# ejecuta con AUDIOLIBRO_TRUST_NEW_SOURCES=1, compara el hash que muestra el script con la web oficial y fíjalo aquí.
 lame 3.100 ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz
-ffmpeg 7.1.1 UNPINNED https://ffmpeg.org/releases/ffmpeg-7.1.1.tar.xz
-espeak-ng 1.52.0 UNPINNED https://github.com/espeak-ng/espeak-ng/archive/refs/tags/1.52.0.tar.gz
+ffmpeg 6.1.1 8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac0873616f968 http://archive.ubuntu.com/ubuntu/pool/universe/f/ffmpeg/ffmpeg_6.1.1.orig.tar.xz
+espeak-ng 1.52.0 d2a886bae3547a15c52801cb37e415230834a7ee7f9a57352b98d60454d97cea http://archive.ubuntu.com/ubuntu/pool/main/e/espeak-ng/espeak-ng_1.52.0+dfsg.orig.tar.gz

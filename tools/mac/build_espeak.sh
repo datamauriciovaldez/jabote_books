@@ -3,10 +3,11 @@
 # Uso (macOS Apple Silicon):  ./tools/mac/build_espeak.sh
 source "$(dirname "$0")/lib.sh"
 require_macos_arm64
-for t in autoconf automake libtool pkg-config; do
+for t in autoconf automake pkg-config; do
     command -v "$t" >/dev/null || fail "Falta '$t'. Ejecuta:  brew install autoconf automake libtool pkg-config"
 done
-command -v glibtoolize >/dev/null || command -v libtoolize >/dev/null || fail "Falta libtool. Ejecuta:  brew install libtool"
+# OJO: en macOS `libtool` es una herramienta de Apple distinta; la de Homebrew se llama `glibtoolize`.
+command -v glibtoolize >/dev/null || command -v libtoolize >/dev/null || fail "Falta libtool de GNU. Ejecuta:  brew install libtool"
 
 fetch_source espeak-ng; ES_VER="$VERSION"; ES_TB="$TARBALL"
 say "Compilando espeak-ng $ES_VER"

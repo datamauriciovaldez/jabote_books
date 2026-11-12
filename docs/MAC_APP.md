@@ -28,12 +28,11 @@ Tus **datos** (voces descargadas, proyectos y audio) están en `~/Library/Applic
 ```bash
 git clone https://github.com/datamauriciovaldez/jabote_books.git
 cd jabote_books
-AUDIOLIBRO_TRUST_NEW_SOURCES=1 ./tools/mac/build_app.sh     # la primera vez
-./tools/mac/build_app.sh                                    # las siguientes
+./tools/mac/build_app.sh
 ```
 Resultado en `dist/mac/`: el `.dmg`, su `.sha256`, `selftest.txt` y la carpeta `sources/`.
 
-**¿Por qué `AUDIOLIBRO_TRUST_NEW_SOURCES=1` la primera vez?** Las fuentes de ffmpeg y espeak-ng aún no tienen su SHA-256 fijado en `packaging/source-hashes.txt` (no se pudieron verificar desde el entorno de desarrollo). El script te **muestra el hash calculado**: compáralo con la web oficial de cada proyecto y escríbelo en ese archivo; desde entonces cada construcción quedará verificada. (La de LAME ya está fijada y verificada.)
+**Fuentes fijadas y verificadas.** `packaging/source-hashes.txt` fija el SHA-256 de LAME 3.100, ffmpeg 6.1.1 y espeak-ng 1.52.0: son **las mismas fuentes que se compilaron y probaron en Linux** (ensayo, ver abajo), comprobadas contra los `.dsc` firmados de Ubuntu. Si una descarga no coincide, el script la borra y se detiene.
 
 **Qué hace el script:**
 1. Compila **LAME** y un **ffmpeg LGPL mínimo** (solo AAC, MP3, FLAC, `loudnorm`, mp4, concat; **sin** componentes GPL ni *nonfree*) y comprueba que el resultado no depende de bibliotecas externas.
@@ -50,7 +49,7 @@ open "build/mac/dist/AudioLibro Libre.app"                                  # de
 La autoprueba imprime un informe como este (todo debe salir `OK`; «Ventana propia» puede ser un `aviso` si falta pywebview):
 ```
   [OK ] Recursos de la app: …
-  [OK ] ffmpeg: ffmpeg version 7.x · LGPL · …/Resources/bin/ffmpeg
+  [OK ] ffmpeg: ffmpeg version 6.1.1 · LGPL · …/Resources/bin/ffmpeg
   [OK ] ffmpeg: exportación real: FLAC normalizado, MP3 con portada y M4B con capítulos y portada generados
   [OK ] espeak-ng: …/Resources/bin/espeak-ng · «hola mundo» → ˈola mˈundo
 RESULTADO: todo correcto
@@ -59,12 +58,14 @@ Si algo falla, **copia y pega**: la salida del script (últimas ~40 líneas), `b
 
 **Prueba completa (a mano, ~5 min):** abre la app → «Probar con Don Quijote» → elige la voz recomendada (se descarga) → «Escuchar muestra» → generar → exportar → **descargar el ZIP y el M4B** (comprueba que las descargas funcionan dentro de la ventana) → ábrelo con *Libros* o *VLC* y mira los capítulos. Cierra la ventana en mitad de una generación, vuelve a abrir y pulsa **Reanudar**.
 
+### Ensayo en Linux (lo que sí se ha comprobado)
+`./tools/mac/rehearse_linux.sh` ejecuta **los mismos scripts** con `AUDIOLIBRO_REHEARSAL=1` y compila LAME, ffmpeg y espeak-ng desde las fuentes fijadas. Resultado verificado: ffmpeg **LGPL** autónomo con `libmp3lame`, AAC, FLAC, `loudnorm`, mp4 y concat; espeak-ng estático que encuentra su carpeta de datos con `ESPEAK_DATA_PATH`; y, metidos en el paquete de PyInstaller de Linux **con el PATH vacío**, la autoprueba en verde y el flujo completo (generar con Piper → exportar M4B con 2 capítulos y MP3 con etiquetas, −19,3 LUFS). El ensayo ya encontró y corrigió dos fallos de los scripts (una comprobación intermitente por `grep -q` + `pipefail` y la detección de `libtool`).
+
 ### Lo que NO está verificado (hay que mirarlo en el Mac)
 | Punto | Plan B si falla |
 |---|---|
 | Que la ventana (`pywebview`) abra la app y permita **descargas** y **subir archivos** | El lanzador abre el navegador (`--browser`) |
-| La variable `ESPEAK_DATA_PATH` hace que espeak-ng encuentre su carpeta de datos dentro de la `.app` | Ajustar la ruta en `app/desktop.py` |
-| Las etiquetas de las fuentes `ffmpeg 7.1.1` y `espeak-ng 1.52.0` existen | Cambiar la versión en `packaging/source-hashes.txt` |
+| Que `espeak-ng` encuentre su carpeta de datos dentro de la `.app` (en Linux sí funciona con `ESPEAK_DATA_PATH`) | Ajustar la ruta en `app/desktop.py` |
 | macOS mínimo (`LSMinimumSystemVersion` = 13.0): depende de las ruedas de `onnxruntime` | Ajustar en `packaging/audiolibro.spec` |
 | Que el cierre de la ventana termine el proceso y no deje la app «colgada» en el Dock | Ver `app/desktop.py::run` |
 | OCR de PDFs escaneados: **no incluido** en esta versión (Tesseract) | Mensaje claro; se puede añadir después |

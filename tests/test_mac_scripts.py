@@ -38,15 +38,18 @@ def test_app_build_signs_tests_and_ships_licenses_and_sources():
     assert re.search(r"selftest.*RESULTADO: todo correcto|RESULTADO: todo correcto.*selftest", text, re.S)
 
 
-def test_source_hashes_are_pinned_or_explicitly_unpinned():
+def test_source_hashes_are_all_pinned_and_match_the_rehearsed_versions():
     rows = [ln.split() for ln in (ROOT / "packaging/source-hashes.txt").read_text().splitlines()
             if ln.strip() and not ln.startswith("#")]
     assert {r[0] for r in rows} == {"lame", "ffmpeg", "espeak-ng"}
     for name, version, sha, url in rows:
-        assert url.startswith("https://") and version in url
-        assert sha == "UNPINNED" or re.fullmatch(r"[0-9a-f]{64}", sha), (name, sha)
-    lame = next(r for r in rows if r[0] == "lame")
-    assert lame[2] == "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e"  # verificado
+        assert url.startswith(("https://", "http://archive.ubuntu.com/")) and version in url
+        assert re.fullmatch(r"[0-9a-f]{64}", sha), (name, sha)       # ninguna "UNPINNED": todo verificado
+    pinned = {r[0]: (r[1], r[2]) for r in rows}
+    assert pinned["lame"][1] == "ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e"
+    # las versiones y hashes de ffmpeg y espeak-ng coinciden con los .dsc de Ubuntu y con lo compilado en el ensayo
+    assert pinned["ffmpeg"] == ("6.1.1", "8684f4b00f94b85461884c3719382f1261f0d9eb3d59640a1f4ac0873616f968")
+    assert pinned["espeak-ng"] == ("1.52.0", "d2a886bae3547a15c52801cb37e415230834a7ee7f9a57352b98d60454d97cea")
 
 
 def test_pyinstaller_spec_is_valid_python_and_bundles_what_the_app_needs():
@@ -130,3 +133,11 @@ def test_scripts_never_pipe_into_grep_q():
             if line.lstrip().startswith("#"):
                 continue
             assert not re.search(r"\|\s*grep\s+(-[a-zA-Z]*q|--quiet)", line), f"{name}:{n}: {line.strip()}"
+
+
+def test_libtool_is_checked_by_its_gnu_name_not_apples_libtool():
+    """Regresión (hallada en el ensayo): en macOS `libtool` es una herramienta de Apple; la GNU se llama glibtoolize."""
+    for name in ("build_espeak.sh", "build_app.sh"):
+        text = (MAC / name).read_text(encoding="utf-8")
+        assert "glibtoolize" in text, name
+        assert not re.search(r"for t in [^;]*\blibtool\b", text), f"{name}: no comprobar el comando 'libtool'"
