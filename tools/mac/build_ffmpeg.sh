@@ -4,7 +4,7 @@
 # Uso (macOS Apple Silicon):  ./tools/mac/build_ffmpeg.sh
 source "$(dirname "$0")/lib.sh"
 require_macos_arm64
-command -v clang >/dev/null || fail "Faltan las herramientas de Xcode. Ejecuta:  xcode-select --install"
+command -v clang >/dev/null || command -v cc >/dev/null || fail "Faltan las herramientas de Xcode. Ejecuta:  xcode-select --install"
 command -v make  >/dev/null || fail "Falta 'make' (Herramientas de línea de comandos de Xcode)."
 
 # ---- LAME (codificador MP3; LGPL-2), estático y en nuestro prefijo para que ffmpeg quede autónomo
@@ -12,12 +12,14 @@ fetch_source lame; LAME_VER="$VERSION"; LAME_TB="$TARBALL"
 say "Compilando LAME $LAME_VER"
 unpack "$LAME_TB" "$WORK/build-lame"
 LAME_PREFIX="$WORK/lame-prefix"
-# config.guess/sub de LAME 3.100 no conocen Apple Silicon: se sustituyen por los de automake.
-AM_DIR="$(ls -d "$(brew --prefix automake 2>/dev/null)"/share/automake-* 2>/dev/null | head -1 || true)"
-[ -n "$AM_DIR" ] || fail "Falta automake. Ejecuta:  brew install automake autoconf libtool pkg-config"
-cp "$AM_DIR/config.guess" "$AM_DIR/config.sub" "$SRCDIR/"
+if is_mac; then
+    # config.guess/sub de LAME 3.100 no conocen Apple Silicon: se sustituyen por los de automake.
+    AM_DIR="$(ls -d "$(brew --prefix automake 2>/dev/null)"/share/automake-* 2>/dev/null | head -1 || true)"
+    [ -n "$AM_DIR" ] || fail "Falta automake. Ejecuta:  brew install automake autoconf libtool pkg-config"
+    cp "$AM_DIR/config.guess" "$AM_DIR/config.sub" "$SRCDIR/"
+fi
 # Parche conocido (también lo aplica Homebrew): símbolo inexistente que rompe el enlazado en macOS reciente.
-sed -i '' '/lame_init_old/d' "$SRCDIR/include/libmp3lame.sym"
+sed_inplace '/lame_init_old/d' "$SRCDIR/include/libmp3lame.sym"
 ( cd "$SRCDIR" && ./configure --prefix="$LAME_PREFIX" --disable-shared --enable-static --disable-frontend \
       --disable-dependency-tracking >/dev/null && make -j"$JOBS" >/dev/null && make install >/dev/null )
 cp "$SRCDIR/COPYING" "$PREFIX/licenses/LAME-COPYING.txt"
@@ -26,7 +28,9 @@ cp "$SRCDIR/COPYING" "$PREFIX/licenses/LAME-COPYING.txt"
 fetch_source ffmpeg; FF_VER="$VERSION"; FF_TB="$TARBALL"
 say "Compilando ffmpeg $FF_VER (LGPL, sin GPL ni nonfree; unos minutos)"
 unpack "$FF_TB" "$WORK/build-ffmpeg"
-CONFIG_FLAGS="--prefix=$PREFIX --arch=arm64 --disable-gpl --disable-nonfree --disable-autodetect --disable-doc \
+ARCH_FLAGS="--arch=arm64"
+if ! is_mac; then ARCH_FLAGS=""; command -v nasm >/dev/null || ARCH_FLAGS="--disable-x86asm"; fi   # (ensayo en Linux)
+CONFIG_FLAGS="--prefix=$PREFIX $ARCH_FLAGS --disable-gpl --disable-nonfree --disable-autodetect --disable-doc \
 --disable-ffplay --disable-ffprobe --disable-network --disable-debug --enable-static --disable-shared \
 --enable-libmp3lame --extra-cflags=-I$LAME_PREFIX/include --extra-ldflags=-L$LAME_PREFIX/lib"
 ( cd "$SRCDIR" && ./configure $CONFIG_FLAGS >/dev/null && make -j"$JOBS" >/dev/null && make install >/dev/null )
