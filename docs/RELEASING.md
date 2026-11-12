@@ -74,6 +74,10 @@ Revisa el contenido: `unzip -l dist/audiolibro-libre-X.Y.Z.zip | less`.
 
 Quien use Colab puede pegar la dirección del ZIP de la release en el notebook (`RELEASE_URL`).
 
+## 8 bis. (Opcional) App para Mac
+
+Si publicas el `.dmg` (ver `docs/MAC_APP.md`), construye en un Mac con Apple Silicon (`./tools/mac/build_app.sh`) y adjunta a la misma release: el `.dmg`, su `.sha256` y **todo `dist/mac/sources/`** (código fuente de ffmpeg, LAME y espeak-ng: es obligatorio por su licencia GPL/LGPL). Indica en la descripción que la app **no está firmada** (primer arranque desde Ajustes → Privacidad y seguridad).
+
 ## 9. (Opcional) Imagen Docker publicada
 
 No hace falta: `docker compose up` construye la imagen en local. Si quieres publicarla en un registro **gratuito** (p. ej. Docker Hub, repositorio público), hazlo a mano:

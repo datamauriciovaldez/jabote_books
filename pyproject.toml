@@ -25,6 +25,8 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest>=8", "ruff>=0.5"]
+# Para construir la app de escritorio de macOS (tools/mac/build_app.sh). Solo se usan al construir.
+mac = ["pywebview>=5; sys_platform == 'darwin'", "pyinstaller>=6"]
 
 [tool.setuptools.packages.find]
 include = ["app*"]

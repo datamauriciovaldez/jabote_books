@@ -84,6 +84,23 @@ Voces en español e inglés del catálogo ({n} voces; todas Apache-2.0):
 {rows}
 """
 
+DESKTOP = """
+## App de escritorio para macOS (opcional)
+
+El instalador `.dmg` (ver `docs/MAC_APP.md`) **redistribuye** estos programas, además del código del proyecto (MIT):
+
+| Componente | Licencia | Notas |
+|---|---|---|
+| ffmpeg (compilado con `--disable-gpl --disable-nonfree`) | LGPL-2.1+ | programa independiente; el código fuente exacto se publica junto al `.dmg` |
+| LAME (dentro de ffmpeg, estático) | LGPL-2 | ídem |
+| **espeak-ng** | **GPL-3.0+** | programa independiente, no enlazado; el código fuente se publica junto al `.dmg` |
+| PyInstaller (solo al construir) | GPL-2.0+ con excepción del *bootloader* | permite distribuir programas con cualquier licencia |
+| pywebview | BSD-3-Clause | ventana nativa |
+| PyObjC | MIT | dependencia de pywebview en macOS |
+
+Detalle y obligaciones: `packaging/THIRD_PARTY_NOTICES.md`.
+"""
+
 FOOT = """
 Para regenerar el catálogo: `python tools/audit_voices.py > app/tts/voices.json` y luego
 `python tools/gen_licenses.py > LICENSES.md`.
@@ -111,7 +128,7 @@ def main() -> None:
     for v in sorted(voices, key=lambda x: (x["lang"], x["id"])):
         rows.append(f"| `{v['id']}` | {v['locale']} | {v['quality']} | {v['license']} | "
                     f"{'sí' if v['attribution_required'] else 'no'} | {v['dataset_url'] or '—'} |")
-    print(HEAD + "\n".join(rows) + "\n" + kokoro_section() + FOOT)
+    print(HEAD + "\n".join(rows) + "\n" + kokoro_section() + DESKTOP + FOOT)
 
 
 if __name__ == "__main__":

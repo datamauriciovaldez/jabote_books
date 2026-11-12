@@ -8,3 +8,5 @@ data/
 *.egg-info/
 dist/
 build/
+packaging/icon.icns
+*.spec.bak

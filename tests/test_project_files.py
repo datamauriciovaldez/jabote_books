@@ -14,10 +14,13 @@ ROOT = Path(__file__).parent.parent
 
 
 def test_version_is_the_same_everywhere():
+    # (el CHANGELOG puede tener una sección "Sin publicar" por encima de la versión actual)
     py = re.search(r'^version = "(.+?)"', (ROOT / "pyproject.toml").read_text(), re.M).group(1)
     compose = yaml.safe_load((ROOT / "docker-compose.yml").read_text())["services"]["audiolibro"]["image"]
     assert py == app.__version__ and compose.endswith(f":{py}")
     assert f"## {py}" in (ROOT / "CHANGELOG.md").read_text(encoding="utf-8")
+    spec = (ROOT / "packaging/audiolibro.spec").read_text()
+    assert "__version__" in spec                      # la .app toma la versión de app/
 
 
 def test_colab_notebook_is_valid_and_safe():
@@ -50,7 +53,8 @@ def test_documentation_links_and_images_exist():
     """Todos los enlaces relativos (y las capturas) de los documentos apuntan a archivos reales."""
     docs = [ROOT / "README.md", ROOT / "CONTRIBUTING.md", *sorted((ROOT / "docs").glob("*.md"))]
     required = {"README.md", "CONTRIBUTING.md", "LICENSES.md", "CHANGELOG.md", "docs/ARCHITECTURE.md",
-                "docs/ADDING_A_VOICE_ENGINE.md", "docs/RELEASING.md", "docs/TROUBLESHOOTING.md", "docs/DECISIONS.md"}
+                "docs/ADDING_A_VOICE_ENGINE.md", "docs/RELEASING.md", "docs/TROUBLESHOOTING.md", "docs/DECISIONS.md",
+                "docs/MAC_APP.md"}
     assert all((ROOT / r).is_file() for r in required)
     broken = []
     for doc in docs:

@@ -51,6 +51,10 @@ Las próximas veces vuelve a hacer doble clic en `install.bat` (o `./install.sh`
 
 Abre [`notebooks/AudioLibroLibre_Colab.ipynb`](notebooks/AudioLibroLibre_Colab.ipynb) en <https://colab.research.google.com/>. **Lee antes sus limitaciones**: tu libro se sube a un servidor de Google (no es «local»), la sesión gratuita se desconecta y borra todo, y no está garantizado que sea más rápido. Es opcional.
 
+#### Opción D — App para Mac (Apple Silicon) 🍎 *(en preparación)*
+
+Una `AudioLibro Libre.app` que se arrastra a *Aplicaciones* y se abre con doble clic, sin instalar nada más. Cuando esté publicada, la descargarás de **Releases** como `.dmg`. Como no está firmada con certificado de pago, **la primera vez** macOS pedirá confirmación (Ajustes del Sistema → Privacidad y seguridad → «Abrir igualmente»). Cómo se construye y qué falta por verificar: [`docs/MAC_APP.md`](docs/MAC_APP.md).
+
 ---
 
 ### 📖 Tu primer audiolibro en 5 pasos (en 2 minutos, con un libro de ejemplo)
@@ -132,6 +136,7 @@ Tu libro **nunca sale de tu ordenador**. Lo único que se descarga de internet s
 | Libro de ≈ 290 páginas sin internet, con corte brusco y reanudación | ✅ probado (texto sintético) |
 | Imagen Docker | ⚠️ escrita y validada en seco (`docker compose config`, pasos simulados); **no se pudo construir** donde se desarrolló (sin motor de Docker) |
 | Windows (`install.bat`) y macOS (`install.sh`) | ⚠️ escritos con cuidado, **no ejecutados** en esos sistemas |
+| App para Mac (`.app`/`.dmg`) | ⚠️ lanzador, autoprueba y empaquetado **probados en Linux**; la construcción y ejecución en macOS **no se han podido probar** (ver `docs/MAC_APP.md`) |
 | Google Colab | ⚠️ **sin probar** |
 | Calidad del audio | Comprobada con reconocimiento de voz; **conviene que una persona lo escuche** |
 

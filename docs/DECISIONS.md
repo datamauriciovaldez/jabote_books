@@ -176,3 +176,20 @@ Las frases se agrupan hasta 400 tokens (Kokoro rinde mal con frases cortas; lím
 - Docker Desktop no es gratuito para grandes empresas: el README lo avisa y ofrece la opción B (100 % libre).
 
 **No se pudo probar (declarado en el README):** construir la imagen (hay cliente pero no motor de Docker ni acceso a registros), `install.bat` en Windows, `install.sh` en macOS, el notebook de Colab y la compatibilidad con Python 3.10. Una persona no técnica no ha seguido el README de principio a fin: se revisó punto por punto contra el comportamiento real, pero la prueba con un usuario real sigue pendiente.
+
+## 13. App de escritorio para macOS (Apple Silicon): lo hecho y lo pendiente
+
+**Decisión del usuario:** `.app` sin firmar para Apple Silicon (el amigo usa Mac). Firmar y notarizar (99 $/año) se descarta por la regla "todo gratis".
+
+**Diseño:** lanzador `app/desktop.py` (ventana con pywebview, plan B navegador, `--self-test`), receta `packaging/audiolibro.spec` (PyInstaller) y scripts `tools/mac/*` que compilan **LAME + ffmpeg LGPL** (`--disable-gpl --disable-nonfree`) y **espeak-ng** estáticos, construyen la `.app`, la firman *ad hoc* (Apple Silicon exige alguna firma) y crean el `.dmg`.
+
+**Cambio de criterio de licencias, solo para este instalador:** hasta ahora no se redistribuía ningún programa GPL (se pedía instalarlos al usuario). El `.dmg` los incluye, así que: ffmpeg se compila sin GPL; ffmpeg/LAME/espeak-ng se ejecutan como procesos independientes (sin enlazar); las licencias van dentro de la app; y **el código fuente exacto se publica junto al `.dmg`** (`dist/mac/sources/`). PyInstaller (GPL-2 + excepción del *bootloader*) es solo herramienta de construcción. pywebview BSD-3, PyObjC MIT (verificado en PyPI). Detalle en `packaging/THIRD_PARTY_NOTICES.md` y `LICENSES.md`.
+
+**Verificado (en Linux):**
+- Binario empaquetado con la misma receta (227 MB): autoprueba en verde y flujo completo sin el código fuente: generar con Piper (16/16), exportar M4B + 2 MP3, `/licencias`, catálogo de Kokoro (los imports perezosos y las bibliotecas nativas de onnxruntime/soundfile/pdfium se incluyeron bien).
+- Lógica de descarga con verificación SHA-256 de `tools/mac/lib.sh` (hash correcto, incorrecto, sin fijar) con tarballs locales; sintaxis de los scripts; opciones de `configure` de LAME compiladas de verdad; la fuente de LAME 3.100 fijada y verificada (`ddfe36ca…da1e`).
+- Dos fallos propios hallados al ejecutar el binario: la autoprueba calculaba rutas desde el script de entrada (en PyInstaller `__file__` apunta a otra carpeta) y la salida del servidor no se vaciaba al redirigirse a un archivo (`flush=True`).
+
+**No verificado (requiere un Mac real; ver `docs/MAC_APP.md`):** compilar ffmpeg/espeak-ng allí (las fuentes de ffmpeg 7.1.1 y espeak-ng 1.52.0 **no tienen hash fijado**: ffmpeg.org y GitHub no son accesibles desde el entorno de desarrollo; el script muestra el hash calculado y exige `AUDIOLIBRO_TRUST_NEW_SOURCES=1` la primera vez), que exista la etiqueta `1.52.0`, `ESPEAK_DATA_PATH`, la ventana de pywebview (descargas y subida de archivos), la firma *ad hoc*, el `.dmg`, el comportamiento de cierre en el Dock y el macOS mínimo.
+
+**Fuera de esta versión:** OCR (Tesseract) dentro de la app; PDF escaneados mostrarían "OCR no disponible".

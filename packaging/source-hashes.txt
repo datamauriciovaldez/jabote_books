@@ -1,0 +1,7 @@
+# Fuentes que se compilan para la app de macOS: NOMBRE VERSIÓN SHA256 URL
+# SHA256 = UNPINNED significa "todavía no verificado": tools/mac/lib.sh se niega a seguir salvo que se
+# ejecute con AUDIOLIBRO_TRUST_NEW_SOURCES=1; entonces muestra el hash calculado para que lo compares con la
+# web oficial y lo escribas aquí (así las siguientes compilaciones quedan fijadas).
+lame 3.100 ddfe36cab873794038ae2c1210557ad34857a4b6bdc515785d1da9e175b1da1e https://downloads.sourceforge.net/project/lame/lame/3.100/lame-3.100.tar.gz
+ffmpeg 7.1.1 UNPINNED https://ffmpeg.org/releases/ffmpeg-7.1.1.tar.xz
+espeak-ng 1.52.0 UNPINNED https://github.com/espeak-ng/espeak-ng/archive/refs/tags/1.52.0.tar.gz

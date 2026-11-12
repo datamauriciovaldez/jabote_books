@@ -1,5 +1,10 @@
 # Historial de cambios / Changelog
 
+## Sin publicar
+
+- Lanzador de escritorio (`python -m app.desktop`) con ventana propia (pywebview), modo navegador y autoprueba (`--self-test`).
+- Receta de PyInstaller y scripts para construir **AudioLibro Libre.app** para macOS (Apple Silicon) con ffmpeg LGPL y espeak-ng incluidos: `docs/MAC_APP.md`. Sin verificar en macOS.
+
 ## 0.1.0
 
 Primera versión completa.
