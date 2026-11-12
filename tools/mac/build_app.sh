@@ -73,13 +73,22 @@ grep -q "RESULTADO: todo correcto" "$WORK/selftest.txt" || fail "La autoprueba f
 say "Creando el .dmg"
 STAGE="$WORK/dmg"; rm -rf "$STAGE"; mkdir -p "$STAGE"
 cp -R "$APP" "$STAGE/"; ln -s /Applications "$STAGE/Applications"
-cat > "$STAGE/LEEME.txt" <<TXT
+cat > "$STAGE/README.txt" <<TXT
 AudioLibro Libre $VER
-1. Arrastra "AudioLibro Libre" a la carpeta Aplicaciones.
-2. La primera vez, macOS dirá que no puede comprobar que esté libre de software malicioso (la app no está firmada
-   con un certificado de pago). Para abrirla: Ajustes del Sistema -> Privacidad y seguridad -> baja hasta el aviso
-   sobre "AudioLibro Libre" -> "Abrir igualmente". Solo hace falta una vez.
-3. Tu libro nunca sale de tu Mac. Más información: https://github.com/datamauriciovaldez/jabote_books
+
+ENGLISH
+1. Drag "AudioLibro Libre" into the Applications folder.
+2. On first launch, macOS states that it cannot verify the application is free of malicious software (it is not
+   signed with a paid developer certificate). To open it: System Settings > Privacy & Security > scroll to the
+   message about "AudioLibro Libre" > "Open Anyway". This is needed only once.
+3. The user's book never leaves the Mac. More information: https://github.com/datamauriciovaldez/jabote_books
+
+ESPAÑOL
+1. Arrastre "AudioLibro Libre" a la carpeta Aplicaciones.
+2. En el primer inicio, macOS indica que no puede comprobar que la aplicación esté libre de software malicioso (no
+   está firmada con un certificado de desarrollador de pago). Para abrirla: Ajustes del Sistema > Privacidad y
+   seguridad > desplácese hasta el mensaje sobre "AudioLibro Libre" > "Abrir igualmente". Solo es necesario una vez.
+3. El libro del usuario nunca sale del Mac. Más información: https://github.com/datamauriciovaldez/jabote_books
 TXT
 DMG="$DIST/AudioLibroLibre-$VER-arm64.dmg"; rm -f "$DMG"
 hdiutil create -volname "AudioLibro Libre" -srcfolder "$STAGE" -ov -format UDZO "$DMG" >/dev/null

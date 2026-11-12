@@ -69,8 +69,43 @@ def test_documentation_links_and_images_exist():
     assert len(list((ROOT / "docs/img").glob("*.jpg"))) >= 6
 
 
-def test_readme_is_bilingual_and_has_required_sections():
+BILINGUAL_DOCS = ["README.md", "CONTRIBUTING.md", "LICENSES.md", "CHANGELOG.md", "docs/ARCHITECTURE.md",
+                  "docs/ADDING_A_VOICE_ENGINE.md", "docs/RELEASING.md", "docs/TROUBLESHOOTING.md", "docs/MAC_APP.md",
+                  "packaging/THIRD_PARTY_NOTICES.md"]
+
+
+def test_readme_is_bilingual_english_first_with_required_sections():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    for needle in ("## Español", "## English", "docker compose up", "install.bat", "./install.sh", "Colab",
-                   "¿Algo falló?", "Aviso legal", "Legal notice", "Estado de las pruebas"):
+    assert text.index("## English") < text.index("## Español")           # inglés primero
+    for needle in ("docker compose up", "install.bat", "./install.sh", "Colab", "Troubleshooting",
+                   "Solución de problemas", "Legal notice", "Aviso legal", "Test status", "Estado de las pruebas",
+                   "docs/img/en-1-upload.jpg", "docs/img/es-1-upload.jpg"):
         assert needle in text, needle
+    for section in ("Installation", "Instalación", "Privacy and offline operation", "Privacidad y funcionamiento"):
+        assert section in text, section
+    # cada sección en inglés aparece antes que su equivalente en español
+    assert text.index("### Installation") < text.index("### Instalación")
+    assert text.index("### Troubleshooting") < text.index("### Solución de problemas")
+
+
+def test_every_document_is_bilingual_with_english_first():
+    for name in BILINGUAL_DOCS:
+        text = (ROOT / name).read_text(encoding="utf-8")
+        en, es = text.find('name="english"'), text.find('name="español"')
+        if name in ("CHANGELOG.md",):
+            en, es = text.find("**English**"), text.find("**Español**")
+        assert 0 <= en < es, f"{name}: debe incluir inglés y después español"
+    decisions = (ROOT / "docs/DECISIONS.md").read_text(encoding="utf-8")
+    assert decisions.index('name="english-summary"') < decisions.index('name="registro-detallado-en-español"')
+
+
+def test_documentation_uses_neutral_professional_language():
+    """Sin referencias personales (la audiencia es "el usuario"/"the user") y sin emojis en la documentación."""
+    import unicodedata
+    files = [ROOT / n for n in BILINGUAL_DOCS] + [ROOT / "docs/DECISIONS.md"]
+    for f in files:
+        text = f.read_text(encoding="utf-8")
+        for bad in ("amigo", "friend", "no técnic", "non-technical", "nontechnical"):
+            assert bad not in text.lower(), f"{f.name}: contiene «{bad}»"
+        emojis = {c for c in text if unicodedata.category(c) == "So" and ord(c) > 0x2000}
+        assert not emojis, f"{f.name}: emojis {emojis}"

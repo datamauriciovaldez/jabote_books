@@ -1,202 +1,329 @@
-# 🎧 AudioLibro Libre
+# AudioLibro Libre
 
-**[Español](#español) · [English](#english)**
-
----
-
-<a name="español"></a>
-## Español
-
-**Convierte un libro en un audiolibro con capítulos. Gratis, en tu ordenador, sin cuentas, sin claves y sin enviar tu libro a ningún servidor.**
-
-Das un libro (EPUB, PDF, Word, TXT o Markdown), eliges una voz y recibes un audiolibro: un **M4B** con marcadores de capítulo y/o un **MP3 por capítulo**, con título, autor y portada. Todo se explica en pantalla paso a paso.
-
-> ⚠️ **Aviso legal.** Debes tener los derechos del libro que conviertes (es tuyo, es de dominio público o tienes permiso de su titular). Esta herramienta **no incluye ni distribuye libros con copyright**. Los libros de ejemplo son fragmentos de dominio público (Cervantes y Austen).
-
-### ¿Qué necesito?
-- Un ordenador con **8 GB de memoria** y **5 GB libres** de disco (Windows, Mac o Linux). No hace falta tarjeta gráfica.
-- **Internet solo para instalar** y para descargar la voz la primera vez (unos 60 MB). Después funciona **sin internet**.
-- Nada de pago: todo el software y las voces son libres con licencia que permite uso comercial (ver [`LICENSES.md`](LICENSES.md)).
-
----
-
-### 🚀 Instalación (elige UNA forma)
-
-#### Opción A — Docker (recomendada: no hay que instalar nada más)
-
-1. **Instala Docker Desktop** desde <https://www.docker.com/products/docker-desktop/> (Windows/Mac) y ábrelo. En Linux basta con Docker Engine y `docker compose`.
-   *Nota: Docker Desktop es gratuito para uso personal, educativo y empresas pequeñas; las grandes empresas necesitan licencia. Si es tu caso, usa la opción B, que es 100 % libre.*
-2. **Descarga este proyecto**: en la página del repositorio pulsa **Code → Download ZIP** y descomprímelo (o descarga el ZIP de la última *Release*).
-3. **Abre una terminal dentro de la carpeta** (es la única vez que la usarás):
-   - *Windows*: abre la carpeta en el Explorador, haz clic en la barra de direcciones, escribe `cmd` y pulsa Intro.
-   - *Mac*: abre *Terminal*, escribe `cd ` (con un espacio) y arrastra la carpeta a la ventana; pulsa Intro.
-   - *Linux*: clic derecho en la carpeta → «Abrir en una terminal».
-4. Escribe este comando y pulsa Intro (la primera vez tarda unos minutos en prepararse):
-
-   ```bash
-   docker compose up -d
-   ```
-5. **Abre <http://localhost:8000>** en tu navegador. ¡Listo!
-
-*La próxima vez:* si Docker está abierto, la aplicación ya está funcionando; solo abre <http://localhost:8000>. Para pararla: en Docker Desktop pulsa ⏹ junto a `audiolibro-libre`.
-
-#### Opción B — Sin Docker (instaladores incluidos)
-
-- **Windows**: haz **doble clic en `install.bat`**. Te dirá si falta algo (Python, ffmpeg, espeak-ng) y cómo instalarlo; después se abre solo el navegador.
-- **Mac / Linux**: en una terminal dentro de la carpeta escribe `./install.sh`. Comprueba Python, ffmpeg y espeak-ng (y ofrece instalarlos), crea el entorno y abre el navegador.
-
-Las próximas veces vuelve a hacer doble clic en `install.bat` (o `./install.sh`): arranca en segundos.
-
-#### Opción C — Google Colab (solo si tu ordenador es muy lento)
-
-Abre [`notebooks/AudioLibroLibre_Colab.ipynb`](notebooks/AudioLibroLibre_Colab.ipynb) en <https://colab.research.google.com/>. **Lee antes sus limitaciones**: tu libro se sube a un servidor de Google (no es «local»), la sesión gratuita se desconecta y borra todo, y no está garantizado que sea más rápido. Es opcional.
-
-#### Opción D — App para Mac (Apple Silicon) 🍎 *(en preparación)*
-
-Una `AudioLibro Libre.app` que se arrastra a *Aplicaciones* y se abre con doble clic, sin instalar nada más. Cuando esté publicada, la descargarás de **Releases** como `.dmg`. Como no está firmada con certificado de pago, **la primera vez** macOS pedirá confirmación (Ajustes del Sistema → Privacidad y seguridad → «Abrir igualmente»). Cómo se construye y qué falta por verificar: [`docs/MAC_APP.md`](docs/MAC_APP.md).
-
----
-
-### 📖 Tu primer audiolibro en 5 pasos (en 2 minutos, con un libro de ejemplo)
-
-En la primera pantalla pulsa **«Tutorial de 2 minutos»** (o **«Probar con Don Quijote»**): te guía con el libro de ejemplo. Cada pantalla tiene un cuadro **«¿Qué está pasando?»** que explica lo que ocurre y por qué, y botones **?** con ayuda en cada ajuste.
-
-**1. Subir el libro** — acepta el aviso legal, elige tu archivo (o arrástralo). Si es un PDF escaneado se reconoce con OCR (necesita Tesseract; con Docker ya viene).
-
-![Paso 1: subir el libro](docs/img/1-subir.jpg)
-
-**2. Revisar el texto** — ya se han quitado números de página, notas al pie y cabeceras, y se han detectado los capítulos. Corrige títulos o texto y **desmarca** lo que no quieras escuchar (índice, agradecimientos…).
-
-![Paso 2: revisar el texto](docs/img/2-revisar.jpg)
-
-**3. Voz y ajustes** — elige motor y voz, **escucha una muestra de 10 segundos**, ajusta velocidad y pausas y, si hace falta, el **diccionario de pronunciación** (nombres, siglas). Abajo ves cuánto tiempo, disco y memoria necesitarás.
-
-![Paso 3: voz y ajustes](docs/img/3-voz.jpg)
-
-**4. Generar** — verás el progreso por capítulo, el tiempo restante y puedes **escuchar lo ya generado**. Puedes **pausar, cancelar y reanudar** sin perder nada: cada fragmento se guarda en el disco al terminar (incluso si se apaga el ordenador).
-
-![Paso 4: generar](docs/img/4-generar.jpg)
-
-**5. Exportar** — elige **M4B** (un archivo con capítulos, ideal para el móvil) y/o **MP3 por capítulo**, añade una portada y descarga todo en un **ZIP**.
-
-![Paso 5: exportar](docs/img/5-exportar.jpg)
-
-También se ve bien en el móvil/tablet y se puede usar con teclado:
-
-<img src="docs/img/movil.jpg" alt="Vista en móvil" width="260">
-
----
-
-### ⏱️ ¿Cuánto tarda y cuánto ocupa?
-
-Medido con un libro de ≈ 290 páginas (81 000 palabras, 30 capítulos, ≈ 8 h de audio) en un procesador de 4 núcleos, sin internet:
-
-| | **Piper** (por defecto) | **Kokoro** (opcional) |
-|---|---|---|
-| Generación | ≈ **20 minutos** | ≈ 2,4 horas |
-| Voz | rápida, buena calidad | más natural, más lenta |
-| Descarga de la voz | 63 MB | 326 MB (una vez) |
-| Memoria RAM | ≈ 0,6 GB | ≈ 1,1 GB |
-
-- **Exportar** M4B + MP3 + ZIP tarda unos 13 minutos para ese libro. El M4B pesa ≈ 245 MB.
-- **Disco**: unos 1,6 GB por libro de 8 h (llega a ≈ 2,7 GB durante la exportación; luego se libera).
-- Un ordenador antiguo puede tardar 2–5 veces más. **La aplicación te da una estimación medida en tu equipo antes de empezar.**
-
-### 📚 Formatos y límites
-EPUB · PDF (con texto o escaneado) · DOCX · TXT · Markdown. Límites conocidos: los PDF de **varias columnas** no se tratan bien; un subtítulo bajo el título de capítulo puede unirse al primer párrafo (se corrige en el paso 2); los EPUB con **DRM** no se pueden leer; el OCR de escaneos muy sucios puede equivocarse.
-
----
-
-### 🆘 ¿Algo falló?
-
-| Qué ves | Qué hacer |
-|---|---|
-| **No se abre <http://localhost:8000>** | Con Docker: abre Docker Desktop y comprueba que `audiolibro-libre` está en marcha (▶). Si el puerto 8000 está ocupado, edita `docker-compose.yml` y cambia `"127.0.0.1:8000:8000"` por `"127.0.0.1:8080:8000"`, y abre <http://localhost:8080>. |
-| **«Docker no se inicia» / error de virtualización (Windows)** | Activa la virtualización en la BIOS y WSL2 (Docker Desktop te guía). Si no puedes, usa la **Opción B**. |
-| **Aviso «Falta ffmpeg» o «Falta espeak-ng»** | Con Docker no pasa. Sin Docker: Windows `winget install Gyan.FFmpeg` y el instalador de espeak-ng ([releases](https://github.com/espeak-ng/espeak-ng/releases)); Mac `brew install ffmpeg espeak-ng`; Linux `sudo apt install ffmpeg espeak-ng`. Luego reinicia la aplicación. |
-| **«No se ha podido conectar para descargar la voz»** | Solo hace falta internet para descargar la voz. Comprueba tu conexión; si usas un proxy o cortafuegos corporativo, permite `huggingface.co`. |
-| **PDF escaneado: «falta Tesseract»** | Con Docker ya viene. Sin Docker: Windows [instalador de Tesseract](https://github.com/UB-Mannheim/tesseract/wiki) (marca el idioma español); Mac `brew install tesseract tesseract-lang`; Linux `sudo apt install tesseract-ocr tesseract-ocr-spa`. |
-| **Una palabra o nombre se pronuncia mal** | En el paso 3 usa el **diccionario de pronunciación**: escribe cómo debe sonar («guai fai» para «WiFi»). |
-| **Va muy lento** | Usa Piper (no Kokoro), cierra otros programas, y mira la estimación del paso 3. En un ordenador lento, valora la Opción C. |
-| **«No hay espacio en disco»** | Mira «Espacio en disco» en el paso 3; borra proyectos antiguos en «Mis proyectos» (Docker: `docker compose down -v` borra **todo**). |
-| **Se cerró a mitad** | No pasa nada: abre el proyecto en «Mis proyectos» y pulsa **Reanudar**. |
-| **Mi reproductor no lee el M4B** | Usa los MP3 por capítulo (funcionan en todas partes). |
-
-Más soluciones y cómo ver los registros: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
-
----
-
-### 🔒 Privacidad y funcionamiento sin internet
-Tu libro **nunca sale de tu ordenador**. Lo único que se descarga de internet son los modelos de voz (desde Hugging Face), una vez. Con la voz ya descargada, todo funciona **sin conexión**.
-
-### 🧪 Estado de las pruebas (sé claro con lo que está comprobado)
-| | Estado |
-|---|---|
-| Linux: instalación limpia con `install.sh` (Python 3.11) y suite automática completa con Python 3.11 y 3.13 | ✅ probado |
-| Libro de ≈ 290 páginas sin internet, con corte brusco y reanudación | ✅ probado (texto sintético) |
-| Imagen Docker | ⚠️ escrita y validada en seco (`docker compose config`, pasos simulados); **no se pudo construir** donde se desarrolló (sin motor de Docker) |
-| Windows (`install.bat`) y macOS (`install.sh`) | ⚠️ escritos con cuidado, **no ejecutados** en esos sistemas |
-| App para Mac (`.app`/`.dmg`) | ⚠️ lanzador, autoprueba y empaquetado **probados en Linux**; la construcción y ejecución en macOS **no se han podido probar** (ver `docs/MAC_APP.md`) |
-| Google Colab | ⚠️ **sin probar** |
-| Calidad del audio | Comprobada con reconocimiento de voz; **conviene que una persona lo escuche** |
-
-Si algo falla en tu sistema, por favor abre una *issue* con lo que ves.
-
-### 🛠️ Para desarrolladores
-```bash
-python -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]"
-./check.sh          # ruff + pytest, todo local (no hay CI)
-```
-[`CONTRIBUTING.md`](CONTRIBUTING.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/ADDING_A_VOICE_ENGINE.md`](docs/ADDING_A_VOICE_ENGINE.md) · [`docs/RELEASING.md`](docs/RELEASING.md) · [`docs/DECISIONS.md`](docs/DECISIONS.md) (investigación de licencias y mediciones) · [`LICENSES.md`](LICENSES.md)
-
-**Licencia:** MIT. Las voces y dependencias tienen sus propias licencias permisivas, documentadas en [`LICENSES.md`](LICENSES.md). *Única excepción documentada:* **espeak-ng** (GPL-3.0) se usa como programa externo independiente, sin enlazarlo.
+**[English](#english) · [Español](#español)**
 
 ---
 
 <a name="english"></a>
 ## English
 
-**Turn a book into an audiobook with chapters. Free, on your own computer, no accounts, no API keys, and your book is never sent to any server.**
+**Convert a book into an audiobook with chapters. Free, runs entirely on the user's computer, requires no accounts or API keys, and never sends the book to any server.**
 
-Give it a book (EPUB, PDF, Word, TXT or Markdown), pick a voice and get an audiobook: a single **M4B** with chapter markers and/or one **MP3 per chapter**, with title, author and cover art. Every screen explains what is happening and why.
+AudioLibro Libre takes a book (EPUB, PDF, Word, TXT or Markdown), lets the user choose a voice and produces an audiobook: a single **M4B** file with chapter markers and/or one **MP3 per chapter**, including title, author and cover art. Each screen of the five-step wizard explains what is happening and why.
 
-> ⚠️ **Legal notice.** You must have the rights to any book you convert (it is yours, public domain, or you have the owner's permission). This tool **does not include or distribute copyrighted books**. The sample books are public-domain excerpts (Cervantes and Austen).
+> **Legal notice.** Users must hold the rights to any book they convert (their own work, public domain, or with the rights holder's permission). This software does not include or distribute copyrighted books. The sample books are public-domain excerpts (Cervantes and Austen).
 
-### What do I need?
-- A computer with **8 GB of RAM** and **5 GB of free disk** (Windows, Mac or Linux). No graphics card needed.
-- **Internet only to install** and to download a voice the first time (~60 MB). After that it works **offline**.
-- Nothing paid: all software and voices are free, with licenses that allow commercial use (see [`LICENSES.md`](LICENSES.md)).
+### Key features
+- Five-step wizard: upload, review text, choose voice and settings, generate, export.
+- Input formats: EPUB, PDF (text-based or scanned, with optional OCR), DOCX, TXT and Markdown.
+- Automatic chapter detection; removal of page numbers, repeated headers and footers, footnotes and end-of-line hyphenation; editable text and chapter selection.
+- Two voice engines: **Piper** (fast, default) and **Kokoro** (more natural, slower), with a 10-second preview and an editable pronunciation dictionary.
+- Pause, cancel and resume without losing progress: every audio fragment is saved to disk as soon as it is generated.
+- Output: M4B with chapter markers, MP3 per chapter with ID3 tags and cover art, loudness normalization, and a ZIP download.
+- Interface in English and Spanish; accessible (keyboard navigation, labels, contrast).
+- Runs on CPU. Works offline once the voice model has been downloaded.
 
-### 🚀 Install (pick ONE way)
+### Requirements
+- A computer running Windows, macOS or Linux with **8 GB of RAM** and **5 GB of free disk space**. A graphics card is not required.
+- Internet access is needed only for installation and to download a voice model the first time (about 60 MB). Afterwards the application works **offline**.
+- All software and voice models are free and licensed for commercial use (see [`LICENSES.md`](LICENSES.md)).
 
-**Option A — Docker (recommended).**
-1. Install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/> and open it (on Linux, Docker Engine + `docker compose` is enough). *Docker Desktop is free for personal, educational and small-business use; large companies need a license — if that is you, use option B, which is 100 % free.*
-2. Download this project (**Code → Download ZIP**) and unzip it.
-3. Open a terminal inside the folder (Windows: type `cmd` in the Explorer address bar; Mac: type `cd ` in Terminal and drag the folder in; Linux: "Open in terminal").
-4. Run (the first time it takes a few minutes to set up):
+### Installation
+
+Choose one of the following options.
+
+#### Option A: Docker (recommended)
+
+1. Install **Docker Desktop** from <https://www.docker.com/products/docker-desktop/> and start it. On Linux, Docker Engine with the `docker compose` plugin is sufficient.
+   *Docker Desktop is free for personal, educational and small-business use; larger organizations require a paid license. If that applies, use Option B, which relies only on free software.*
+2. Download this repository (**Code > Download ZIP**, or the ZIP attached to the latest release) and extract it.
+3. Open a terminal in the extracted folder. This is the only step that requires a terminal.
+   - *Windows:* open the folder in File Explorer, click the address bar, type `cmd` and press Enter.
+   - *macOS:* open Terminal, type `cd ` (with a trailing space), drag the folder into the window and press Enter.
+   - *Linux:* right-click the folder and choose "Open in Terminal".
+4. Run the following command. The first run builds the image and takes several minutes.
+
    ```bash
    docker compose up -d
    ```
-5. Open <http://localhost:8000>. Done! Next time, if Docker is running, just open that address.
+5. Open <http://localhost:8000> in a web browser.
 
-**Option B — Without Docker.** Windows: double-click `install.bat`. Mac/Linux: run `./install.sh` in a terminal inside the folder. They check Python, ffmpeg and espeak-ng, create the environment, and open your browser.
+On later occasions, the application is available at the same address whenever Docker is running. To stop it, use the stop button next to `audiolibro-libre` in Docker Desktop, or run `docker compose down`.
 
-**Option C — Google Colab** (only for very slow computers): open [`notebooks/AudioLibroLibre_Colab.ipynb`](notebooks/AudioLibroLibre_Colab.ipynb). **Read its limitations first**: your book is uploaded to a Google server (not "local"), free sessions disconnect and wipe everything, and it is not guaranteed to be faster. Optional.
+#### Option B: Installer scripts (without Docker)
 
-### 📖 Your first audiobook in 5 steps
-Press **"2-minute tutorial"** on the first screen. The steps: **1** upload the book → **2** review the text and chapters (untick what you do not want) → **3** choose engine and voice, listen to a **10-second sample**, set speed, pauses and a **pronunciation dictionary** → **4** generate (pause / cancel / resume without losing anything; every piece is saved to disk as it finishes) → **5** export M4B and/or MP3s plus a ZIP. See the screenshots above (the interface is available in English with the language selector).
+- **Windows:** double-click `install.bat`. The script verifies that Python, ffmpeg and espeak-ng are available, explains how to install anything that is missing, and then opens the browser.
+- **macOS / Linux:** run `./install.sh` in a terminal opened in the project folder. The script verifies Python, ffmpeg and espeak-ng (and offers to install them), creates a virtual environment and opens the browser.
 
-### ⏱️ How long does it take?
-Measured with a ≈ 290-page book (81 000 words, ≈ 8 h of audio) on a 4-core CPU, offline: **Piper ≈ 20 min** (default, fast), **Kokoro ≈ 2.4 h** (more natural, slower). Export (M4B + MP3 + ZIP) ≈ 13 min; M4B ≈ 245 MB; ≈ 1.6 GB of disk per 8-hour book. Older computers can take 2–5× longer — the app shows an estimate measured on *your* machine before you start.
+Subsequent launches use the same script and start within seconds.
 
-### 🆘 Something went wrong?
-See the table in the Spanish section above or [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md). The most common ones: port 8000 busy (change it in `docker-compose.yml`), missing ffmpeg / espeak-ng / Tesseract (not needed with Docker), no internet while downloading a voice (only needed once), or a crash mid-way (open the project and press **Resume**).
+#### Option C: Google Colab (optional)
 
-### 🧪 What has been tested
-Linux (clean install via `install.sh` with Python 3.11; full automated test suite on Python 3.11 and 3.13) and an offline ≈ 290-page run with a hard kill and resume ✅. The Docker image, Windows (`install.bat`), macOS and Colab were written carefully but **could not be run** in the development environment ⚠️. Audio quality was checked with speech recognition; a human should listen to it.
+For computers that are too slow to run the application locally, [`notebooks/AudioLibroLibre_Colab.ipynb`](notebooks/AudioLibroLibre_Colab.ipynb) runs it on Google Colab. **Review its limitations first:** the book is uploaded to a Google server (processing is not local), free sessions disconnect and erase their contents, and a speed improvement is not guaranteed. The notebook is untested.
 
-### 🛠️ For developers
-`./check.sh` runs ruff + pytest locally (there is no CI). See [`CONTRIBUTING.md`](CONTRIBUTING.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/ADDING_A_VOICE_ENGINE.md`](docs/ADDING_A_VOICE_ENGINE.md), [`docs/RELEASING.md`](docs/RELEASING.md), [`docs/DECISIONS.md`](docs/DECISIONS.md) and [`LICENSES.md`](LICENSES.md).
+#### Option D: macOS application (Apple Silicon), in preparation
 
-**License:** MIT. Voices and dependencies carry their own permissive licenses, documented in [`LICENSES.md`](LICENSES.md). *One documented exception:* **espeak-ng** (GPL-3.0) is used as a separate external program, never linked.
+A native `AudioLibro Libre.app`, distributed as a `.dmg`, that does not require Python or any other installation. Because the application is not signed with a paid developer certificate, macOS asks for confirmation on first launch (System Settings > Privacy & Security > "Open Anyway"). Build instructions and the list of items still to be verified are in [`docs/MAC_APP.md`](docs/MAC_APP.md).
+
+### Quick start: your first audiobook in five steps
+
+On the first screen, select **"2-minute tutorial"** (or **"Try with Pride and Prejudice"**) to be guided through the process with a public-domain sample book. Every screen includes a **"What is happening?"** panel and contextual help (**?**) for each setting.
+
+**1. Upload the book.** Accept the legal notice and select a file (or drag it onto the page). Scanned PDFs are processed with OCR, which requires Tesseract (included with Docker).
+
+![Step 1: upload the book](docs/img/en-1-upload.jpg)
+
+**2. Review the text.** Page numbers, footnotes and headers have been removed and chapters detected. Edit titles or text and clear the checkbox of any section that should not be narrated (index, acknowledgements, and so on).
+
+![Step 2: review the text](docs/img/en-2-review.jpg)
+
+**3. Choose the voice and settings.** Select the engine and voice, listen to a **10-second sample**, adjust speed and pauses, and optionally add entries to the **pronunciation dictionary** (names, acronyms). The page shows the estimated time, disk space and memory required, measured on the user's machine.
+
+![Step 3: voice and settings](docs/img/en-3-voice.jpg)
+
+**4. Generate.** Progress is shown per chapter with the estimated remaining time, and the audio generated so far can be previewed. Generation can be **paused, cancelled and resumed** without loss of work, even after the computer has been shut down.
+
+![Step 4: generate](docs/img/en-4-generate.jpg)
+
+**5. Export.** Choose **M4B** (a single file with chapter markers, suited to mobile devices) and/or **one MP3 per chapter**, optionally add a cover image, and download the result as a **ZIP** archive.
+
+![Step 5: export](docs/img/en-5-export.jpg)
+
+The interface adapts to mobile and tablet screens and supports keyboard navigation:
+
+<img src="docs/img/en-mobile.jpg" alt="Mobile layout of the first screen" width="260">
+
+### Performance and resource usage
+
+Measured with a book of approximately 290 pages (81,000 words, 30 chapters, about 8 hours of audio) on a 4-core CPU, without internet access:
+
+| | **Piper** (default) | **Kokoro** (optional) |
+|---|---|---|
+| Generation time | about **20 minutes** | about 2.4 hours |
+| Characteristics | fast, good quality | more natural, slower |
+| Voice model download | 63 MB | 326 MB (shared by all voices) |
+| Peak memory | about 0.6 GB | about 1.1 GB |
+
+- Exporting M4B, MP3 and ZIP for that book takes about 13 minutes; the M4B is approximately 245 MB.
+- Disk usage is about 1.6 GB per eight-hour book, peaking at about 2.7 GB during export.
+- Older hardware may be two to five times slower. Before generation starts, the application shows an estimate measured on the user's own machine.
+
+### Supported formats and known limitations
+
+EPUB, PDF (text-based or scanned), DOCX, TXT and Markdown. Known limitations:
+- Multi-column PDFs are not handled correctly.
+- A subtitle below a chapter title may be merged with the first paragraph; it can be corrected in step 2.
+- EPUB files protected by DRM cannot be read.
+- OCR accuracy decreases on poor-quality scans.
+
+### Troubleshooting
+
+| Symptom | Resolution |
+|---|---|
+| <http://localhost:8000> does not open | With Docker, confirm in Docker Desktop that the `audiolibro-libre` container is running. If port 8000 is in use, change `"127.0.0.1:8000:8000"` to `"127.0.0.1:8080:8000"` in `docker-compose.yml` and open <http://localhost:8080>. |
+| Docker does not start, or reports a virtualization error (Windows) | Enable virtualization in the BIOS/UEFI and install WSL 2 (Docker Desktop provides guidance). Otherwise use Option B. |
+| "ffmpeg is missing" or "espeak-ng is missing" | Not applicable with Docker. Otherwise: Windows, `winget install Gyan.FFmpeg` and the espeak-ng installer from its [releases page](https://github.com/espeak-ng/espeak-ng/releases); macOS, `brew install ffmpeg espeak-ng`; Linux, `sudo apt install ffmpeg espeak-ng`. Restart the application afterwards. |
+| The voice cannot be downloaded | Internet access is required only for this step. Check the connection; behind a corporate proxy or firewall, allow `huggingface.co`. |
+| Scanned PDF: "Tesseract is missing" | Included with Docker. Otherwise: Windows, the [Tesseract installer](https://github.com/UB-Mannheim/tesseract/wiki) with the required language; macOS, `brew install tesseract tesseract-lang`; Linux, `sudo apt install tesseract-ocr tesseract-ocr-spa`. |
+| A word or name is mispronounced | Add an entry to the pronunciation dictionary in step 3 (for example, "guai fai" for "WiFi"). |
+| Generation is slow | Use Piper instead of Kokoro, close other applications and review the estimate in step 3. |
+| Insufficient disk space | Check the estimate in step 3 and delete old projects under "My projects". Note that `docker compose down -v` deletes all application data. |
+| The application was closed during generation | No work is lost. Open the project under "My projects" and select **Resume**. |
+| A player does not support M4B | Use the per-chapter MP3 files, which are supported universally. |
+
+Further solutions and instructions for viewing logs: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+
+### Privacy and offline operation
+
+The book never leaves the user's computer. The only network access is the one-time download of voice models from Hugging Face. Once a voice is installed, the application works without a connection.
+
+### Test status
+
+| Area | Status |
+|---|---|
+| Linux: clean installation with `install.sh` (Python 3.11) and the complete automated test suite on Python 3.11 and 3.13 | Verified |
+| Approximately 290-page book processed offline, with a forced process termination followed by resumption | Verified (synthetic text) |
+| Docker image | Written and validated statically (`docker compose config`, simulated build steps); **not built**, because the development environment has no Docker engine |
+| Windows (`install.bat`) and macOS (`install.sh`) | Written, **not executed** on those systems |
+| macOS application (`.app` / `.dmg`) | Launcher, self-test and packaging verified on Linux; **building and running on macOS has not been tested** (see [`docs/MAC_APP.md`](docs/MAC_APP.md)) |
+| Google Colab notebook | **Not tested** |
+| Audio quality | Verified with automatic speech recognition; **evaluation by human listeners is pending** |
+
+Issue reports from other platforms are welcome.
+
+### Development
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+./check.sh          # ruff + pytest, run locally (the project has no CI)
+```
+
+Documentation: [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/ADDING_A_VOICE_ENGINE.md`](docs/ADDING_A_VOICE_ENGINE.md) · [`docs/RELEASING.md`](docs/RELEASING.md) · [`docs/DECISIONS.md`](docs/DECISIONS.md) (license research and measurements) · [`LICENSES.md`](LICENSES.md) · [`CHANGELOG.md`](CHANGELOG.md)
+
+### License
+
+MIT. Voices and dependencies carry their own permissive licenses, documented in [`LICENSES.md`](LICENSES.md). One documented exception applies: **espeak-ng** (GPL-3.0) is executed as a separate external program and is never linked.
+
+---
+
+<a name="español"></a>
+## Español
+
+**Convierte un libro en un audiolibro con capítulos. Es gratuito, se ejecuta íntegramente en el ordenador del usuario, no requiere cuentas ni claves de API y nunca envía el libro a ningún servidor.**
+
+AudioLibro Libre toma un libro (EPUB, PDF, Word, TXT o Markdown), permite al usuario elegir una voz y genera un audiolibro: un único archivo **M4B** con marcadores de capítulo y/o un **MP3 por capítulo**, con título, autor y portada. Cada pantalla del asistente de cinco pasos explica qué está ocurriendo y por qué.
+
+> **Aviso legal.** El usuario debe tener los derechos de cualquier libro que convierta (obra propia, dominio público o permiso del titular de los derechos). Este software no incluye ni distribuye libros con copyright. Los libros de ejemplo son fragmentos de dominio público (Cervantes y Austen).
+
+### Características principales
+- Asistente de cinco pasos: subir, revisar el texto, elegir voz y ajustes, generar y exportar.
+- Formatos de entrada: EPUB, PDF (con texto o escaneado, con OCR opcional), DOCX, TXT y Markdown.
+- Detección automática de capítulos; eliminación de números de página, cabeceras y pies repetidos, notas al pie y guiones de fin de línea; texto editable y selección de capítulos.
+- Dos motores de voz: **Piper** (rápido, por defecto) y **Kokoro** (más natural, más lento), con muestra de 10 segundos y diccionario de pronunciación editable.
+- Pausar, cancelar y reanudar sin perder el progreso: cada fragmento de audio se guarda en disco en cuanto se genera.
+- Salida: M4B con marcadores de capítulo, MP3 por capítulo con etiquetas ID3 y portada, normalización de volumen y descarga en ZIP.
+- Interfaz en español e inglés; accesible (navegación por teclado, etiquetas, contraste).
+- Funciona en CPU. Opera sin conexión una vez descargado el modelo de voz.
+
+### Requisitos
+- Un ordenador con Windows, macOS o Linux, con **8 GB de memoria RAM** y **5 GB de espacio libre en disco**. No se necesita tarjeta gráfica.
+- Solo se requiere conexión a internet para la instalación y para descargar un modelo de voz la primera vez (unos 60 MB). Después la aplicación funciona **sin conexión**.
+- Todo el software y los modelos de voz son gratuitos y con licencias que permiten el uso comercial (véase [`LICENSES.md`](LICENSES.md)).
+
+### Instalación
+
+Elija una de las siguientes opciones.
+
+#### Opción A: Docker (recomendada)
+
+1. Instale **Docker Desktop** desde <https://www.docker.com/products/docker-desktop/> e inícielo. En Linux basta con Docker Engine y el complemento `docker compose`.
+   *Docker Desktop es gratuito para uso personal, educativo y de pequeñas empresas; las organizaciones grandes necesitan una licencia de pago. En ese caso, utilice la Opción B, que solo emplea software libre.*
+2. Descargue este repositorio (**Code > Download ZIP**, o el ZIP adjunto a la última versión publicada) y descomprímalo.
+3. Abra una terminal en la carpeta descomprimida. Es el único paso que requiere una terminal.
+   - *Windows:* abra la carpeta en el Explorador de archivos, haga clic en la barra de direcciones, escriba `cmd` y pulse Intro.
+   - *macOS:* abra Terminal, escriba `cd ` (con un espacio al final), arrastre la carpeta a la ventana y pulse Intro.
+   - *Linux:* haga clic derecho en la carpeta y seleccione «Abrir en una terminal».
+4. Ejecute el siguiente comando. La primera ejecución construye la imagen y tarda varios minutos.
+
+   ```bash
+   docker compose up -d
+   ```
+5. Abra <http://localhost:8000> en un navegador web.
+
+En ocasiones posteriores, la aplicación está disponible en la misma dirección mientras Docker esté en ejecución. Para detenerla, utilice el botón de parada junto a `audiolibro-libre` en Docker Desktop, o ejecute `docker compose down`.
+
+#### Opción B: Scripts de instalación (sin Docker)
+
+- **Windows:** haga doble clic en `install.bat`. El script comprueba que Python, ffmpeg y espeak-ng estén disponibles, explica cómo instalar lo que falte y, a continuación, abre el navegador.
+- **macOS / Linux:** ejecute `./install.sh` en una terminal abierta en la carpeta del proyecto. El script comprueba Python, ffmpeg y espeak-ng (y ofrece instalarlos), crea un entorno virtual y abre el navegador.
+
+Los inicios posteriores utilizan el mismo script y tardan unos segundos.
+
+#### Opción C: Google Colab (opcional)
+
+Para ordenadores demasiado lentos para ejecutar la aplicación localmente, [`notebooks/AudioLibroLibre_Colab.ipynb`](notebooks/AudioLibroLibre_Colab.ipynb) la ejecuta en Google Colab. **Revise antes sus limitaciones:** el libro se sube a un servidor de Google (el procesamiento no es local), las sesiones gratuitas se desconectan y borran su contenido, y no se garantiza una mejora de velocidad. El cuaderno no ha sido probado.
+
+#### Opción D: aplicación para macOS (Apple Silicon), en preparación
+
+Una aplicación nativa `AudioLibro Libre.app`, distribuida como `.dmg`, que no requiere Python ni ninguna otra instalación. Dado que la aplicación no está firmada con un certificado de desarrollador de pago, macOS solicita confirmación en el primer inicio (Ajustes del Sistema > Privacidad y seguridad > «Abrir igualmente»). Las instrucciones de construcción y la lista de elementos pendientes de verificar están en [`docs/MAC_APP.md`](docs/MAC_APP.md).
+
+### Inicio rápido: el primer audiolibro en cinco pasos
+
+En la primera pantalla, seleccione **«Tutorial de 2 minutos»** (o **«Probar con Don Quijote»**) para recorrer el proceso con un libro de ejemplo de dominio público. Cada pantalla incluye un panel **«¿Qué está pasando?»** y ayuda contextual (**?**) para cada ajuste.
+
+**1. Subir el libro.** Acepte el aviso legal y seleccione un archivo (o arrástrelo a la página). Los PDF escaneados se procesan con OCR, que requiere Tesseract (incluido con Docker).
+
+![Paso 1: subir el libro](docs/img/es-1-upload.jpg)
+
+**2. Revisar el texto.** Se han eliminado los números de página, las notas al pie y las cabeceras, y se han detectado los capítulos. Edite títulos o texto y desmarque cualquier sección que no deba narrarse (índice, agradecimientos, etc.).
+
+![Paso 2: revisar el texto](docs/img/es-2-review.jpg)
+
+**3. Elegir la voz y los ajustes.** Seleccione el motor y la voz, escuche una **muestra de 10 segundos**, ajuste la velocidad y las pausas y, opcionalmente, añada entradas al **diccionario de pronunciación** (nombres, siglas). La página muestra el tiempo, el espacio en disco y la memoria estimados, medidos en el equipo del usuario.
+
+![Paso 3: voz y ajustes](docs/img/es-3-voice.jpg)
+
+**4. Generar.** Se muestra el progreso por capítulo con el tiempo restante estimado, y se puede escuchar el audio generado hasta el momento. La generación puede **pausarse, cancelarse y reanudarse** sin pérdida de trabajo, incluso después de apagar el ordenador.
+
+![Paso 4: generar](docs/img/es-4-generate.jpg)
+
+**5. Exportar.** Elija **M4B** (un único archivo con marcadores de capítulo, adecuado para dispositivos móviles) y/o **un MP3 por capítulo**, añada opcionalmente una portada y descargue el resultado en un archivo **ZIP**.
+
+![Paso 5: exportar](docs/img/es-5-export.jpg)
+
+La interfaz se adapta a pantallas de móvil y tableta y admite la navegación por teclado:
+
+<img src="docs/img/es-mobile.jpg" alt="Diseño móvil de la primera pantalla" width="260">
+
+### Rendimiento y uso de recursos
+
+Medido con un libro de aproximadamente 290 páginas (81 000 palabras, 30 capítulos, unas 8 horas de audio) en una CPU de 4 núcleos, sin conexión a internet:
+
+| | **Piper** (por defecto) | **Kokoro** (opcional) |
+|---|---|---|
+| Tiempo de generación | unos **20 minutos** | unas 2,4 horas |
+| Características | rápido, buena calidad | más natural, más lento |
+| Descarga del modelo de voz | 63 MB | 326 MB (compartido por todas las voces) |
+| Memoria máxima | unos 0,6 GB | unos 1,1 GB |
+
+- Exportar M4B, MP3 y ZIP de ese libro tarda unos 13 minutos; el M4B ocupa aproximadamente 245 MB.
+- El uso de disco es de unos 1,6 GB por libro de ocho horas, con un máximo de unos 2,7 GB durante la exportación.
+- Un equipo más antiguo puede ser entre dos y cinco veces más lento. Antes de iniciar la generación, la aplicación muestra una estimación medida en el propio equipo del usuario.
+
+### Formatos admitidos y limitaciones conocidas
+
+EPUB, PDF (con texto o escaneado), DOCX, TXT y Markdown. Limitaciones conocidas:
+- Los PDF de varias columnas no se procesan correctamente.
+- Un subtítulo situado bajo el título de un capítulo puede fusionarse con el primer párrafo; puede corregirse en el paso 2.
+- Los EPUB protegidos con DRM no se pueden leer.
+- La precisión del OCR disminuye con escaneos de baja calidad.
+
+### Solución de problemas
+
+| Síntoma | Solución |
+|---|---|
+| No se abre <http://localhost:8000> | Con Docker, confirme en Docker Desktop que el contenedor `audiolibro-libre` está en ejecución. Si el puerto 8000 está ocupado, cambie `"127.0.0.1:8000:8000"` por `"127.0.0.1:8080:8000"` en `docker-compose.yml` y abra <http://localhost:8080>. |
+| Docker no se inicia o informa de un error de virtualización (Windows) | Active la virtualización en la BIOS/UEFI e instale WSL 2 (Docker Desktop ofrece asistencia). En caso contrario, utilice la Opción B. |
+| «Falta ffmpeg» o «Falta espeak-ng» | No aplica con Docker. En otro caso: Windows, `winget install Gyan.FFmpeg` y el instalador de espeak-ng de su [página de versiones](https://github.com/espeak-ng/espeak-ng/releases); macOS, `brew install ffmpeg espeak-ng`; Linux, `sudo apt install ffmpeg espeak-ng`. Reinicie después la aplicación. |
+| No se puede descargar la voz | Solo este paso requiere internet. Compruebe la conexión; detrás de un proxy o cortafuegos corporativo, permita `huggingface.co`. |
+| PDF escaneado: «Falta Tesseract» | Incluido con Docker. En otro caso: Windows, el [instalador de Tesseract](https://github.com/UB-Mannheim/tesseract/wiki) con el idioma necesario; macOS, `brew install tesseract tesseract-lang`; Linux, `sudo apt install tesseract-ocr tesseract-ocr-spa`. |
+| Una palabra o un nombre se pronuncia mal | Añada una entrada al diccionario de pronunciación en el paso 3 (por ejemplo, «guai fai» para «WiFi»). |
+| La generación es lenta | Utilice Piper en lugar de Kokoro, cierre otras aplicaciones y revise la estimación del paso 3. |
+| Espacio en disco insuficiente | Revise la estimación del paso 3 y elimine proyectos antiguos en «Mis proyectos». Tenga en cuenta que `docker compose down -v` borra todos los datos de la aplicación. |
+| La aplicación se cerró durante la generación | No se pierde trabajo. Abra el proyecto en «Mis proyectos» y seleccione **Reanudar**. |
+| Un reproductor no admite M4B | Utilice los MP3 por capítulo, compatibles universalmente. |
+
+Más soluciones e instrucciones para consultar los registros: [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md).
+
+### Privacidad y funcionamiento sin conexión
+
+El libro nunca sale del ordenador del usuario. El único acceso a la red es la descarga única de los modelos de voz desde Hugging Face. Una vez instalada una voz, la aplicación funciona sin conexión.
+
+### Estado de las pruebas
+
+| Área | Estado |
+|---|---|
+| Linux: instalación limpia con `install.sh` (Python 3.11) y suite automática completa con Python 3.11 y 3.13 | Verificado |
+| Libro de unas 290 páginas procesado sin conexión, con terminación forzada del proceso y posterior reanudación | Verificado (texto sintético) |
+| Imagen de Docker | Escrita y validada de forma estática (`docker compose config`, pasos de construcción simulados); **no construida**, porque el entorno de desarrollo no dispone de motor de Docker |
+| Windows (`install.bat`) y macOS (`install.sh`) | Escritos, **no ejecutados** en esos sistemas |
+| Aplicación para macOS (`.app` / `.dmg`) | Lanzador, autoprueba y empaquetado verificados en Linux; **la construcción y ejecución en macOS no se han probado** (véase [`docs/MAC_APP.md`](docs/MAC_APP.md)) |
+| Cuaderno de Google Colab | **No probado** |
+| Calidad del audio | Verificada con reconocimiento automático de voz; **está pendiente la evaluación por oyentes humanos** |
+
+Se agradecen los informes de incidencias desde otras plataformas.
+
+### Desarrollo
+
+```bash
+python -m venv .venv && . .venv/bin/activate
+pip install -e ".[dev]"
+./check.sh          # ruff + pytest, ejecutados en local (el proyecto no tiene CI)
+```
+
+Documentación: [`CONTRIBUTING.md`](CONTRIBUTING.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) · [`docs/ADDING_A_VOICE_ENGINE.md`](docs/ADDING_A_VOICE_ENGINE.md) · [`docs/RELEASING.md`](docs/RELEASING.md) · [`docs/DECISIONS.md`](docs/DECISIONS.md) (investigación de licencias y mediciones) · [`LICENSES.md`](LICENSES.md) · [`CHANGELOG.md`](CHANGELOG.md)
+
+### Licencia
+
+MIT. Las voces y las dependencias tienen sus propias licencias permisivas, documentadas en [`LICENSES.md`](LICENSES.md). Se aplica una excepción documentada: **espeak-ng** (GPL-3.0) se ejecuta como un programa externo independiente y nunca se enlaza.
