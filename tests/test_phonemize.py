@@ -31,3 +31,18 @@ def test_phoneme_ids_layout_matches_piper():
 
     idm = {"_": [0], "^": [1], "$": [2], "a": [14], "b": [15]}
     assert PiperEngine._ids("ab x", idm) == [1, 0, 14, 0, 15, 0, 2]  # BOS PAD a PAD b PAD EOS; 'x' y ' ' ignorados
+
+
+def test_espeak_path_override_and_windows_default(tmp_path, monkeypatch):
+    from app.tts import phonemize as ph
+    fake = tmp_path / "espeak-ng.exe"
+    fake.write_text("x")
+    monkeypatch.setattr(ph.shutil, "which", lambda name: None)
+    monkeypatch.delenv("AUDIOLIBRO_ESPEAK", raising=False)
+    assert ph.espeak_binary() is None
+    monkeypatch.setattr(ph, "_WINDOWS_DEFAULTS", (str(fake),))
+    assert ph.espeak_binary() == str(fake)          # ruta habitual del instalador de Windows
+    other = tmp_path / "mi-espeak"
+    other.write_text("x")
+    monkeypatch.setenv("AUDIOLIBRO_ESPEAK", str(other))
+    assert ph.espeak_binary() == str(other)         # la variable de entorno manda

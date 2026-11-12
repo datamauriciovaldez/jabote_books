@@ -168,3 +168,8 @@ def test_upload_pdf_docx_md_and_scanned_error(client, tmp_path, monkeypatch):
 def test_system_reports_ocr(client):
     s = client.get("/api/system").json()
     assert "tesseract" in s and ".pdf" in s["supported_formats"] and isinstance(s["ocr_languages"], list)
+
+
+def test_licenses_page_is_served(client):
+    r = client.get("/licencias")
+    assert r.status_code == 200 and "espeak-ng" in r.text and "Apache-2.0" in r.text

@@ -1,10 +1,12 @@
 """Fonemización con espeak-ng, invocado como programa externo (es GPL-3: nunca se enlaza ni se copia)."""
 from __future__ import annotations
 
+import os
 import re
 import shutil
 import subprocess
 from functools import lru_cache
+from pathlib import Path
 
 from app.errors import UserError
 
@@ -12,8 +14,18 @@ _CLAUSE = re.compile(r"([,;:.!?…]+)")
 _LANG_SWITCH = re.compile(r"\([a-z\-]{2,8}\)")
 
 
+_WINDOWS_DEFAULTS = (r"C:\Program Files\eSpeak NG\espeak-ng.exe", r"C:\Program Files (x86)\eSpeak NG\espeak-ng.exe")
+
+
 def espeak_binary() -> str | None:
-    return shutil.which("espeak-ng") or shutil.which("espeak")
+    """Ruta de espeak-ng: variable AUDIOLIBRO_ESPEAK, el PATH o las rutas habituales del instalador de Windows."""
+    override = os.environ.get("AUDIOLIBRO_ESPEAK")
+    if override and Path(override).is_file():
+        return override
+    found = shutil.which("espeak-ng") or shutil.which("espeak")
+    if found:
+        return found
+    return next((p for p in _WINDOWS_DEFAULTS if Path(p).is_file()), None)
 
 
 def _run_espeak(text: str, voice: str) -> list[str]:

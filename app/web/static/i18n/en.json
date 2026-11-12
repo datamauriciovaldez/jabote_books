@@ -261,5 +261,6 @@
   "s3.engine": "Voice engine",
   "s3.engine_piper": "Piper — very fast, good quality (recommended)",
   "s3.engine_kokoro": "Kokoro — more natural, but much slower (330 MB download)",
-  "help.engine": "Piper turns a whole book into audio in minutes or a few hours, even on a modest computer. Kokoro sounds more natural but takes several times longer (a 300-page book can take about 3 hours on a 4-core laptop) and uses more memory (≈1 GB). Listen to the 10-second sample with each before deciding."
+  "help.engine": "Piper turns a whole book into audio in minutes or a few hours, even on a modest computer. Kokoro sounds more natural but takes several times longer (a 300-page book can take about 3 hours on a 4-core laptop) and uses more memory (≈1 GB). Listen to the 10-second sample with each before deciding.",
+  "legal.licenses_link": "Licenses of all software and voices"
 }

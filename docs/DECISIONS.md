@@ -159,3 +159,20 @@ Las frases se agrupan hasta 400 tokens (Kokoro rinde mal con frases cortas; lím
 - **Variante int8 (`model_quantized.onnx`, 92 MB) descartada:** en este CPU fue **más lenta** (0,8× tiempo real) que fp32 (≈ 4×). Se usa fp32.
 - **Catálogo:** 31 voces es/en generadas por `tools/audit_kokoro.py`, que verifica la licencia y el SHA-256 de cada archivo; se descargan con verificación.
 - Los tests no descargan el modelo (sesión ONNX simulada); la prueba real se activa con `AUDIOLIBRO_TEST_DOWNLOADS=1`.
+
+## 12. Fase 5: instalación y documentación
+
+**Probado de verdad (Linux):**
+- `install.sh --check` en una copia **limpia** con Python 3.11 (23 s) y arranque real con `install.sh`; suite completa (ruff + pytest) con Python 3.11.
+- Camino de error con ffmpeg/espeak-ng ausentes del PATH: mensaje claro y código de salida 1.
+- Pasos del `Dockerfile` **simulados** en un entorno limpio con Python 3.12 (`pip install -e .`, variables de entorno de la imagen, mismo *healthcheck*): HTTP 200.
+- `docker compose config` valida el `docker-compose.yml`.
+- Capturas del README tomadas de la aplicación real (incluido un error y la vista de móvil de 390 px, sin desbordes).
+
+**Hallazgos:**
+- `pip install -e .` imprime un aviso largo de `setuptools` que asustaría a una persona no técnica: los instaladores lo mandan a `.venv/install.log` y solo lo muestran si falla.
+- `onnxruntime` actual exige Python ≥ 3.11 pero `pyproject.toml` declara ≥ 3.10: `pip` elige una versión compatible en 3.10, que **no se ha podido probar** (no hay Python 3.10 en el entorno).
+- Docker con *volumen nombrado* (no *bind mount*) evita los problemas de permisos de `./data` en Linux; el puerto se publica solo en `127.0.0.1`.
+- Docker Desktop no es gratuito para grandes empresas: el README lo avisa y ofrece la opción B (100 % libre).
+
+**No se pudo probar (declarado en el README):** construir la imagen (hay cliente pero no motor de Docker ni acceso a registros), `install.bat` en Windows, `install.sh` en macOS, el notebook de Colab y la compatibilidad con Python 3.10. Una persona no técnica no ha seguido el README de principio a fin: se revisó punto por punto contra el comportamiento real, pero la prueba con un usuario real sigue pendiente.

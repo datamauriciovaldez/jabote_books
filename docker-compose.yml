@@ -1,0 +1,17 @@
+# Uso:  docker compose up        (la primera vez construye la imagen; tarda unos minutos)
+# Luego abre http://localhost:8000 en tu navegador. Para parar: Ctrl+C (o `docker compose down`).
+services:
+  audiolibro:
+    build: .
+    image: audiolibro-libre:0.1.0
+    container_name: audiolibro-libre
+    ports:
+      # Solo accesible desde tu propio ordenador (nadie más de tu red puede entrar).
+      - "127.0.0.1:8000:8000"
+    volumes:
+      # Voces descargadas, proyectos y audio. Se conservan aunque pares o actualices la app.
+      - audiolibro-data:/data
+    restart: unless-stopped
+
+volumes:
+  audiolibro-data:
