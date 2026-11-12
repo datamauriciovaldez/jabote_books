@@ -10,20 +10,8 @@ from app.extractors.base import extract
 from app.extractors.docx import extract_docx
 from app.extractors.md import extract_md, strip_markdown
 from app.extractors.pdf import extract_pdf
+from tests.extractors_text import para  # noqa: E402
 from tests.pdfgen import book_page, write_pdf
-
-SENT = ("Era una tarde tranquila número {i} en el pueblo y nadie esperaba que llegase el forastero con su "
-        "maleta gris, que traía noticias importantes de la ciudad lejana. ")
-_seed = [0]
-
-
-def para(n=3):
-    """Texto distinto en cada llamada (en un libro real las líneas no se repiten página tras página)."""
-    out = []
-    for _ in range(n):
-        _seed[0] += 1
-        out.append(SENT.format(i=_seed[0]))
-    return "".join(out).strip()
 
 
 def sample_pdf(tmp_path, with_header=True, footnote_on=None):

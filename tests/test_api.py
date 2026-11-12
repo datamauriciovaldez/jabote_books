@@ -135,8 +135,9 @@ def test_runner_singleton_exists():
 def test_upload_pdf_docx_md_and_scanned_error(client, tmp_path, monkeypatch):
     from docx import Document
 
+    from tests.extractors_text import para
     from tests.pdfgen import book_page, write_pdf
-    pages = [book_page(["Capítulo 1", f"Texto largo del libro número {i} " * 6], number=i + 1,
+    pages = [book_page(["Capítulo 1", para(2)] if i == 0 else [para(3)], number=i + 1,
                        header="Cabecera del libro") for i in range(5)]
     pdf = write_pdf(tmp_path / "a.pdf", pages)
     job = client.post("/api/jobs", files={"file": ("a.pdf", pdf.read_bytes())}, data={"token": "t1"}).json()
