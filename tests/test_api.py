@@ -130,3 +130,40 @@ def test_system_and_voices(client):
 
 def test_runner_singleton_exists():
     assert runner is not None
+
+
+def test_upload_pdf_docx_md_and_scanned_error(client, tmp_path, monkeypatch):
+    from docx import Document
+
+    from tests.pdfgen import book_page, write_pdf
+    pages = [book_page(["Capítulo 1", f"Texto largo del libro número {i} " * 6], number=i + 1,
+                       header="Cabecera del libro") for i in range(5)]
+    pdf = write_pdf(tmp_path / "a.pdf", pages)
+    job = client.post("/api/jobs", files={"file": ("a.pdf", pdf.read_bytes())}, data={"token": "t1"}).json()
+    assert job["book"]["chapters"] and "Cabecera" not in job["book"]["chapters"][0]["text"]
+    assert client.get("/api/uploads/t1").json()["total"] == 0  # el progreso se limpia al terminar
+
+    d = Document()
+    d.add_heading("Uno", 1)
+    d.add_paragraph("Un párrafo de texto bastante largo para que el capítulo tenga contenido suficiente. " * 3)
+    d.save(str(tmp_path / "a.docx"))
+    j2 = client.post("/api/jobs", files={"file": ("a.docx", (tmp_path / "a.docx").read_bytes())}).json()
+    assert j2["book"]["chapters"][0]["title"] == "Uno"
+
+    md = b"# Libro\n\n## A\n\n" + b"Texto del capitulo a con **negrita** y mas palabras para llegar al minimo. " * 2 \
+        + b"\n\n## B\n\n" + b"Texto del capitulo b con suficiente contenido para que no se descarte. " * 2
+    j3 = client.post("/api/jobs", files={"file": ("a.md", md)}).json()
+    assert [c["title"] for c in j3["book"]["chapters"]] == ["A", "B"]
+
+    import shutil
+
+    from tests.test_extractors_phase2 import scanned_pdf
+    scan = scanned_pdf(tmp_path)
+    monkeypatch.setattr(shutil, "which", lambda name: None)
+    r = client.post("/api/jobs", files={"file": ("s.pdf", scan.read_bytes())})
+    assert r.status_code == 400 and r.json()["error"]["code"] == "ocr_missing"
+
+
+def test_system_reports_ocr(client):
+    s = client.get("/api/system").json()
+    assert "tesseract" in s and ".pdf" in s["supported_formats"] and isinstance(s["ocr_languages"], list)

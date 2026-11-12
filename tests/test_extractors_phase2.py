@@ -202,3 +202,20 @@ def test_header_with_page_number_variants_removed_but_body_lines_kept():
     out = remove_repeated(pages)
     assert all(len(p) == 2 for p in out)
     assert out[0][0].startswith("Era una tarde número 0")
+
+
+def test_unicode_hyphen_at_line_end_is_joined():
+    """Regresión: los PDF de Chromium/Word parten con U+2010, no con '-'."""
+    from app.cleaning.normalize import fix_hyphenation
+    assert fix_hyphenation("asti‐\nllero y rocín") == "astillero y rocín"
+    assert fix_hyphenation("ve‑\nllorí") == "vellorí"
+
+
+def test_chapter_headings_differing_only_by_number_are_not_running_headers():
+    """Regresión: 'Capítulo 1/2/3' en la 1ª línea de varias páginas se borraban como cabecera repetida."""
+    from app.cleaning.pages import remove_repeated
+    pages = [[f"Capítulo {i + 1}", f"Contenido único de la página {'abc'[i % 3] * (i + 3)}", f"{i + 10}"]
+             for i in range(6)]
+    out = remove_repeated(pages)
+    assert all(p[0] == f"Capítulo {i + 1}" for i, p in enumerate(out))
+    assert all(len(p) == 2 for p in out)  # el número de página sí se quita

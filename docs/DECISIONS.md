@@ -87,3 +87,19 @@ generado con Whisper (solo como herramienta de desarrollo, no se distribuye) y s
    pausa/reanudación con Piper real: los fragmentos ya generados no se regeneran.
 6. Voces: el catálogo auditado tiene 19 voces permisivas (7 es, 12 en). `lessac` (licencia Blizzard), las CC-BY-SA/NC y las
    de licencia "See URL" se descartan por prudencia.
+
+## 9. Hallazgos de la Fase 2 (verificados con un PDF real generado con Chromium)
+
+- **Guiones de PDF**: los PDF parten palabras con U+2010 (`‐`), no `-`. `fix_hyphenation` los cubre (regresión incluida).
+- **Cabeceras repetidas**: se detectan comparando las 3 primeras y últimas líneas de cada página (≥ 40 % de páginas).
+  Los dígitos solo se ignoran si están en un extremo de la línea ("12 Título"); los encabezados de capítulo
+  ("Capítulo 1/2/3") nunca se normalizan, o se borraban como si fueran cabecera (bug real encontrado y corregido).
+- **Notas al pie en PDF**: se descartan por tamaño de fuente (< 85 % de la dominante en el cuarto inferior de la página)
+  usando el `visitor_text` de pypdf. No detecta notas con el mismo tamaño que el cuerpo.
+- **OCR**: Tesseract (Apache-2.0) vía `pytesseract` + `pypdfium2` para renderizar a 250 dpi. Medido: ~1 s/página en CPU
+  (≈ 5 min para 300 páginas) y 100 % de similitud de palabras sobre un escaneo limpio a 200 dpi. Se activa solo si
+  ≥ 50 % de las páginas no tienen texto; si falta Tesseract o el idioma, la app lo explica con pasos de instalación.
+- **Limitaciones conocidas**: no se tratan PDFs de varias columnas; un subtítulo bajo el título del capítulo puede fundirse
+  con el primer párrafo (se corrige a mano en el paso 2); el OCR de escaneos muy sucios puede tener errores.
+- **Dependencias nuevas** (todas permisivas): pypdf (BSD-3), python-docx (MIT), pypdfium2 (BSD-3/Apache-2.0),
+  pytesseract (Apache-2.0), Pillow (MIT-CMU). Ver `LICENSES.md`.

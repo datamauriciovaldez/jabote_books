@@ -18,6 +18,8 @@ def _norm(line: str) -> str:
     """Clave de comparación. Los dígitos solo se ignoran si están en un extremo ("12 Título", "Título 12"):
     es el patrón de un número de página; una frase del texto que solo difiere en un número no es cabecera."""
     key = re.sub(r"\s+", " ", line.strip().lower())
+    if is_heading_line(line):  # "Capítulo 1", "Capítulo 2"… son títulos distintos, no una cabecera repetida
+        return key
     return re.sub(r"\d+", "#", key) if _NUM_EDGE.search(line) else key
 
 

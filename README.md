@@ -1,15 +1,15 @@
 # AudioLibro Libre
 
-**ES:** Convierte un libro (`.epub`, `.txt`) en un audiolibro con capítulos. Gratis, en tu ordenador, sin cuentas, sin claves y sin enviar el libro a ningún servidor.
-**EN:** Turn a book (`.epub`, `.txt`) into an audiobook with chapters. Free, on your own computer, no accounts, no API keys, nothing leaves your machine.
+**ES:** Convierte un libro (`.epub`, `.pdf`, `.docx`, `.txt`, `.md`) en un audiolibro con capítulos. Gratis, en tu ordenador, sin cuentas, sin claves y sin enviar el libro a ningún servidor.
+**EN:** Turn a book (`.epub`, `.pdf`, `.docx`, `.txt`, `.md`) into an audiobook with chapters. Free, on your own computer, no accounts, no API keys, nothing leaves your machine.
 
 > ⚠️ **Aviso legal / Legal notice.** Debes tener los derechos del libro que conviertes. La herramienta no incluye ni distribuye libros con copyright. / You must have the rights to any book you convert. This tool does not include or distribute copyrighted books.
 
-> 🚧 **Estado: fase 1 (MVP).** Funciona: TXT y EPUB, voces Piper, MP3 por capítulo con ID3/portada, ZIP. Pendiente (ver `docs/DECISIONS.md`): PDF/DOCX/MD/OCR, M4B, Kokoro, Docker, instaladores y guía visual completa.
+> 🚧 **Estado: fase 2.** Funciona: EPUB, PDF (con OCR opcional de escaneados), DOCX, TXT y MD; limpieza de cabeceras/pies/notas; voces Piper; diccionario de pronunciación; MP3 por capítulo con ID3/portada; ZIP. Pendiente (ver `docs/DECISIONS.md`): M4B, Kokoro, Docker, instaladores y guía visual completa.
 
 ## Probarlo ya (desarrollo)
 
-Necesitas Python 3.10+, `ffmpeg` y `espeak-ng` instalados (Linux: `sudo apt install ffmpeg espeak-ng`).
+Necesitas Python 3.10+, `ffmpeg` y `espeak-ng` instalados (Linux: `sudo apt install ffmpeg espeak-ng`). Para PDFs escaneados, opcionalmente Tesseract (`sudo apt install tesseract-ocr tesseract-ocr-spa`).
 
 ```bash
 python -m venv .venv && . .venv/bin/activate

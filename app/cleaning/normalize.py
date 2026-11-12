@@ -39,7 +39,8 @@ def remove_footnotes(text: str) -> str:
 
 def fix_hyphenation(text: str) -> str:
     """Une palabras partidas a final de línea: 'infor-\\nmación' -> 'información'."""
-    return re.sub(r"(?<=[^\W\d_])-[ ]*\n[ ]*(?=[a-záéíóúüñàèìòùç])", "", text)
+    # '-' y los guiones Unicode que usan los PDF (U+2010 hyphen, U+2011 non-breaking hyphen)
+    return re.sub(r"(?<=[^\W\d_])[-\u2010\u2011][ ]*\n[ ]*(?=[a-záéíóúüñàèìòùç])", "", text)
 
 
 def _ends_sentence(line: str) -> bool:
