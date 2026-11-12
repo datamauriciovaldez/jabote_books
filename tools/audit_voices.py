@@ -38,7 +38,7 @@ def classify(text: str) -> tuple[str, bool] | None:
         return "Apache-2.0", True
     if re.search(r"\bmit\b", t):
         return "MIT", True
-    m = re.search(r"(creativecommons\.org/licenses/by/([\d.]+)|cc[ -]by[ -]?([\d.]+)|attribution 4\.0 international$)", t)
+    m = re.search(r"(creativecommons\.org/licenses/by/([\d.]+)|cc[ -]by[ -]?([\d.]+))", t)
     if m or t.strip().endswith("attribution 4.0 international") or "cc by 4.0" in t:
         ver = (m.group(2) or m.group(3)) if m else "4.0"
         return f"CC-BY-{ver or '4.0'}", True
@@ -48,7 +48,8 @@ def classify(text: str) -> tuple[str, bool] | None:
 def main() -> None:
     entries, rejected = [], []
     for lang in LANGS:
-        tree = json.loads(_get(f"{BASE.replace('huggingface.co', 'huggingface.co/api/models')}/tree/main/{lang}?recursive=true"))
+        api = f"https://huggingface.co/api/models/{REPO}/tree/main/{lang}?recursive=true"
+        tree = json.loads(_get(api))
         cards = [x["path"] for x in tree if x["path"].endswith("MODEL_CARD")]
         sizes = {x["path"]: x.get("lfs", {}).get("size", x.get("size", 0)) for x in tree}
         for card in sorted(cards):
